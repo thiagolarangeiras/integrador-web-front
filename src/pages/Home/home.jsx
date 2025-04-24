@@ -261,7 +261,7 @@ function Home() {
           <li><Link to="/fornecedores">Fornecedores</Link></li>
           <li><Link to="/pedidos">Pedidos</Link></li>
           <li><Link to="/usuarios">Usuários</Link></li>
-          <li><Link to="/login">Usuários</Link></li>
+          <li><Link to="/login">Login</Link></li>
         </ul>
       </div>
 
