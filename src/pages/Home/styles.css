@@ -278,6 +278,10 @@ body {
 }
 
 /* Modal de Adicionar Produto */
+.modal{
+  background: white;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -292,6 +296,7 @@ body {
 }
 
 .add-product-modal {
+  
   background-color: var(--white);
   border-radius: var(--border-radius);
   width: 90%;
@@ -321,13 +326,18 @@ body {
 
 .add-product-form {
   padding: 15px;
+  
 }
+
+
 
 .form-group {
   margin-bottom: 15px;
+
 }
 
 .form-group label {
+  
   display: block;
   margin-bottom: 5px;
   font-size: 13px;
@@ -337,25 +347,31 @@ body {
 .form-group input,
 .form-group select,
 .form-group textarea {
+  
   width: 100%;
   padding: 10px;
   border: 1px solid var(--light-gray);
   border-radius: var(--border-radius);
   font-size: 14px;
+  
 }
 
 .form-group textarea {
   min-height: 80px;
   resize: vertical;
+  
+  
 }
 
 .form-row {
   display: flex;
   gap: 15px;
+  
 }
 
 .form-row .form-group {
   flex: 1;
+  
 }
 
 .form-actions {
@@ -365,6 +381,7 @@ body {
   margin-top: 20px;
   padding-top: 15px;
   border-top: 1px solid var(--light-gray);
+  
 }
 
 .cancel-btn {
@@ -434,4 +451,103 @@ body {
 
 .save-btn:hover {
   background-color: #218838;
+}
+
+/* Layout com Sidebar */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #1f1f1f;
+  color: #fff;
+  padding: 20px;
+  position: fixed;
+  height: 100%;
+  z-index: 1;
+}
+
+.sidebar-header {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: var(--white);
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar-menu li {
+  padding: 12px 10px;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.sidebar-menu li:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+}
+
+.sidebar-menu li.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+.app-container {
+  flex: 1;
+  margin-left: 220px; /* Largura da sidebar */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Ajustes para o header com sidebar */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 60px;
+    padding: 10px;
+    overflow: hidden;
+  }
+  
+  .sidebar-header {
+    font-size: 0;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .sidebar-header::before {
+    content: "PF";
+    font-size: 16px;
+  }
+  
+  .sidebar-menu li {
+    padding: 15px 0;
+    text-align: center;
+    font-size: 0;
+  }
+  
+  .sidebar-menu li::before {
+    content: "→";
+    font-size: 16px;
+  }
+  
+  .app-container {
+    margin-left: 60px;
+  }
 }

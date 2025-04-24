@@ -8,7 +8,7 @@ function In() {
         <input 
           name="usuario" 
           type="text" 
-          placeholder="Nome de usuário" 
+          placeholder="Nome de usuario"  // Removido o acento de "usuário"
         />
         <input 
           name="senha" 
@@ -18,7 +18,7 @@ function In() {
         <div className="buttons">
           <button type="submit">Entrar</button>
           <button type="button" className="forgot-btn">
-            Esqueci minha senha
+            Esquecí minha senha  // Acentuação corrigida para "Esquecí"
           </button>
         </div>
       </form>

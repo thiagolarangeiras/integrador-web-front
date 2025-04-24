@@ -4,65 +4,59 @@ function Up() {
   return (
     <div className="signup-container">
       <div className="signup-card">
-        <h1>User Registration</h1>
+        <h1>Registro</h1>
         
         <form>
           <div className="form-group">
-            <label htmlFor="name">Full Name</label>
             <input 
               id="name" 
               type="text" 
-              placeholder="Enter full name" 
+              placeholder="Nome completo" 
               required 
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email</label>
             <input 
               id="email" 
               type="email" 
-              placeholder="Enter email" 
+              placeholder="Email" 
               required 
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="username">Username</label>
             <input 
               id="username" 
               type="text" 
-              placeholder="Choose a username" 
+              placeholder="Nome de usuário" 
               required 
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
             <input 
               id="password" 
               type="password" 
-              placeholder="Create password" 
+              placeholder="Crie uma senha" 
               required 
             />
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="role">Role</label>
               <select id="role" required>
-                <option value="">Select role</option>
-                <option value="admin">Administrator</option>
-                <option value="operator">Operator</option>
-                <option value="manager">Manager</option>
+                <option value="">Permissão</option>
+                <option value="admin">Administrador</option>
+                <option value="operator">Funcionário</option>
+                <option value="manager">Gerente</option>
               </select>
             </div>
 
             <div className="form-group">
-              <label htmlFor="status">Status</label>
               <select id="status" required>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="active">Ativo</option>
+                <option value="inactive">Inativo</option>
               </select>
             </div>
           </div>
