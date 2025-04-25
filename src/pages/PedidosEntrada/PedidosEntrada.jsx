@@ -4,7 +4,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import './styles.css';
 
-function EntradaPedidos() {
+function PedidosEntrada() {
   const [pedidos, setPedidos] = useState([
     {
       id: 1,
@@ -159,4 +159,4 @@ function EntradaPedidos() {
   );
 }
 
-export default EntradaPedidos;
+export default PedidosEntrada;

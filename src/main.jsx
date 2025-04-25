@@ -4,15 +4,21 @@ import { createBrowserRouter, Navigate, RouterProvider, useNavigate, Link, Outle
 
 import { getTeste, logout } from './requests.js'
 
-import SignUp_Up from './pages/SignUp_In/Up/Up.jsx'
-import SignUp_In from './pages/SignUp_In/In/in.jsx'
-import Home from './pages/Home/home.jsx'
-import Clientes from './pages/Cadastro/Clientes.jsx'
-import Fornecedores from './pages/Fornecedores/Fornecedores.jsx'
-import Pedidos from './pages/Pedidos/Pedidos.jsx'
-import Usuarios from './pages/Usuarios/Usuarios.jsx'
 import List from './example/List.jsx'
 import Teste from './example/Teste.jsx'
+
+import Login from './pages/SignUp_In/In/in.jsx'
+import SignUp_Up from './pages/SignUp_In/Up/Up.jsx'
+
+import Home from './pages/Home/home.jsx'
+import Clientes from "./pages/Clientes/Clientes.jsx"
+import Fornecedores from "./pages/Fornecedores/Fornecedores.jsx"
+import Marca from "./pages/Marca.jsx"
+import PedidosEntrada from "./pages/PedidosEntrada/PedidosEntrada.jsx"
+import PedidosSaida from "./pages/PedidosSaida.jsx"
+import Produtos from "./pages/Produtos.jsx"
+import Usuarios from './pages/Usuarios/Usuarios.jsx'
+import Vendedores from './pages/Vendedores.jsx'
 
 function Auth({ children }) {
     const navigate = useNavigate();
@@ -75,7 +81,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/login",
-        element: <SignUp_In />
+        element: <Login />
     },
     {
         path: "/logout",
@@ -110,12 +116,28 @@ const router = createBrowserRouter([
                 element: <Fornecedores />,
             },
             {
-                path: "/pedidos",
-                element: <Pedidos />,
+                path: "/marca",
+                element: <Marca />,
+            },
+            {
+                path: "/pedidos/entrada",
+                element: <PedidosEntrada />,
+            },
+            {
+                path: "/pedidos/saida",
+                element: <PedidosSaida />,
+            },
+            {
+                path: "/produtos",
+                element: <Produtos />,
             },
             {
                 path: "/usuarios",
                 element: <Usuarios />,
+            },
+            {
+                path: "/vendedores",
+                element: <Vendedores />,
             },
         ],
     },
