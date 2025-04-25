@@ -10,11 +10,9 @@ import Home from './pages/Home/home.jsx'
 import Clientes from './pages/Cadastro/Clientes.jsx'
 import Fornecedores from './pages/Fornecedores/Fornecedores.jsx'
 import Pedidos from './pages/Pedidos/Pedidos.jsx'
-import Usuarios from './pages/Usuarios.jsx'
+import Usuarios from './pages/Usuarios/Usuarios.jsx'
 import List from './example/List.jsx'
 import Teste from './example/Teste.jsx'
-
-
 
 function Auth({ children }) {
     const navigate = useNavigate();

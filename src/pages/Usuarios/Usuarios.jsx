@@ -1,32 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import { jsPDF } from "jspdf";
 import { Link } from 'react-router-dom';
 import autoTable from "jspdf-autotable";
+import { getUsuarioLista } from '../../requests';
 
-function Home() {
+const usuarioStruct = {
+	id: 0,
+	username: "",
+	email: "",
+	password: "",
+	cargo: [""]
+}
+
+export default function Usuarios() {
+  const [page, setPage] = useState(0);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [users, setUsers] = useState([
     {
       id: 1,
-      name: 'Inácio',
+      username: 'Inácio',
       email: 'inacio@gmail.com',
       cargo: 'Representante'
     },
     {
       id: 2,
-      name: 'Maicou',
+      username: 'Maicou',
       email: 'maicou@hotmail.com',
       cargo: 'Programador'
     },
     {
       id: 3,
-      name: 'Carine',
+      username: 'Carine',
       email: 'carine@outlook.com',
       cargo: 'Traficante'
     }
   ]);
+
+	useEffect(() => {
+		getUsuarioLista(page, 50).then((value) => {
+			setUsers(value);
+		})
+	}, [page]);
 
   const [filters, setFilters] = useState({
     cargo: 'Todos Cargos',
@@ -34,7 +50,7 @@ function Home() {
   });
 
   const [newUser, setNewUser] = useState({
-    name: '',
+    username: '',
     email: '',
     cargo: ''
   });
@@ -54,9 +70,9 @@ function Home() {
     filteredUsers.sort((a, b) => {
       switch (filters.sort) {
         case 'Nome (A-Z)':
-          return a.name.localeCompare(b.name);
+          return a.username.localeCompare(b.username);
         case 'Nome (Z-A)':
-          return b.name.localeCompare(a.name);
+          return b.username.localeCompare(a.username);
         case 'Cargo (A-Z)':
           return a.cargo.localeCompare(b.cargo);
         case 'Cargo (Z-A)':
@@ -79,7 +95,7 @@ function Home() {
   const exportToCSV = () => {
     const headers = ['Nome', 'Email', 'Cargo'];
     const data = filteredUsers.map(user => [
-      user.name,
+      user.username,
       user.email,
       user.cargo
     ]);
@@ -119,14 +135,14 @@ function Home() {
       doc.text('Relatório de Usuários', 105, 15, { align: 'center' });
 
       const safeUsers = filteredUsers.map(u => ({
-        name: String(u.name || '-'),
+        username: String(u.username || '-'),
         email: String(u.email || '-'),
         cargo: String(u.cargo || '-')
       }));
 
       doc.autoTable({
         head: [['Nome', 'Email', 'Cargo']],
-        body: safeUsers.map(u => [u.name, u.email, u.cargo]),
+        body: safeUsers.map(u => [u.username, u.email, u.cargo]),
         startY: 25,
         margin: { left: 10, right: 10 },
         styles: {
@@ -169,7 +185,7 @@ function Home() {
 
     setShowAddModal(false);
     setNewUser({
-      name: '',
+      username: '',
       email: '',
       cargo: ''
     });
@@ -178,7 +194,7 @@ function Home() {
   const handleEdit = (user) => {
     setEditingUser(user);
     setNewUser({
-      name: user.name,
+      username: user.username,
       email: user.email,
       cargo: user.cargo
     });
@@ -341,5 +357,3 @@ function Home() {
     </div>
   );
 }
-
-export default Home;
