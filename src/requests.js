@@ -1,16 +1,8 @@
-// 
-//
-//
-const url = "https://integrador-web-feqi.onrender.com";
+const url = "http://localhost:8080";
 
 export function convertData(data){
     data = new Date(data);
     return `${data.getDate().toString().padStart(2, '0')}/${(data.getMonth() + 1).toString().padStart(2, '0')}/${data.getFullYear()}`;
-}
-
-export async function logout() {
-    localStorage.removeItem("token");
-    return true;
 }
 
 export async function getTeste() {
@@ -24,13 +16,12 @@ export async function getTeste() {
         referrerPolicy: "no-referrer",
         headers: [["Authorization", `Bearer ${token}`]],
     };
-    const response = await fetch(`${url}/ajuda`, init);
-    console.log(response);
-    if(response.status === 200) return response;
+    const response = await fetch(`${url}/teste`, init);
+    if(response.status === 200) return true;
     return false;
 }
 
-export async function getTeste2() {
+export async function getTesteLogin() {
     const token = localStorage.getItem("token");
     const init = {
         method: "GET",
@@ -41,9 +32,14 @@ export async function getTeste2() {
         referrerPolicy: "no-referrer",
         headers: [["Authorization", `Bearer ${token}`]],
     };
-    const response = await fetch(`${url}/ajuda`, init);
+    const response = await fetch(`${url}/teste/login`, init);
     if(response.status === 200) return true;
     return false;
+}
+
+export async function logout() {
+    localStorage.removeItem("token");
+    return true;
 }
 
 export async function postLogin(dados) {

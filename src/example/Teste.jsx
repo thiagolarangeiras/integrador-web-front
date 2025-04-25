@@ -8,7 +8,6 @@ export default function Teste() {
     useEffect(() => {
         getTeste().then((value)=> {
             setTexto(value);
-            console.log(JSON.stringify(value))
         });
     }, []);
     

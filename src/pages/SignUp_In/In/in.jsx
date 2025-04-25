@@ -1,29 +1,48 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 import './style.css';
+import { postLogin } from '../../../requests';
 
-function In() {
-  return (
-    <div className='container'>
-      <form>
-        <h1>Login</h1>
-        <input 
-          name="usuario" 
-          type="text" 
-          placeholder="Nome de usuario"  // Removido o acento de "usuário"
-        />
-        <input 
-          name="senha" 
-          type="password" 
-          placeholder="Senha" 
-        />
-        <div className="buttons">
-          <button type="submit">Entrar</button>
-          <button type="button" className="forgot-btn">
-            Esquecí minha senha  // Acentuação corrigida para "Esquecí"
-          </button>
+export default function In() {
+    const navigate = useNavigate();
+    const [usuario, setUsuario] = useState({
+        username: "",
+        password: ""
+    });
+    
+    function handleLogin(e) {
+        e.preventDefault();
+        postLogin(usuario).then((value)=> {
+            if (value.token) navigate("/");
+        });
+    };
+
+    return (
+        <div className='container'>
+            <form onSubmit={handleLogin}>
+                <h1>Login</h1>
+                <input
+                    name="usuario"
+                    type="text"
+                    placeholder="Nome de usuario"
+                    value={usuario.username}
+                    onChange={(e) => setUsuario({ ...usuario, username: e.target.value })}
+                />
+                <input
+                    name="senha"
+                    type="password"
+                    placeholder="Senha"
+                    value={usuario.password}
+                    onChange={(e) => setUsuario({ ...usuario, password: e.target.value })}
+                />
+                <div className="buttons">
+                    <button type="submit">Entrar</button>
+                    <button type="button" className="forgot-btn">
+                        Esquecí minha senha
+                    </button>
+                </div>
+            </form>
         </div>
-      </form>
-    </div>
-  );
+    );
 }
-
-export default In;
