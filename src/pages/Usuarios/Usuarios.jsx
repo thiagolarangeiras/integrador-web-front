@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import { jsPDF } from "jspdf";
-import { Link } from 'react-router-dom';
 import autoTable from "jspdf-autotable";
-import { getUsuarioLista } from '../../requests';
+import { postUsuario, patchUsuario, getUsuarioLista, deleteUsuario } from '../../requests';
 
 const usuarioStruct = {
 	id: 0,
@@ -16,27 +15,25 @@ const usuarioStruct = {
 export default function Usuarios() {
   const [page, setPage] = useState(0);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
+  const [editId, setEditId] = useState(false);
   const [users, setUsers] = useState([
     {
       id: 1,
       username: 'Inácio',
       email: 'inacio@gmail.com',
-      cargo: 'Representante'
-    },
-    {
-      id: 2,
-      username: 'Maicou',
-      email: 'maicou@hotmail.com',
-      cargo: 'Programador'
-    },
-    {
-      id: 3,
-      username: 'Carine',
-      email: 'carine@outlook.com',
-      cargo: 'Traficante'
+      cargo: ["Representante"]
     }
   ]);
+  const [filters, setFilters] = useState({
+    cargo: 'Todos Cargos',
+    sort: 'Nome (A-Z)'
+  });
+  const [newUser, setNewUser] = useState({
+	  username: "",
+	  email: "",
+	  password: "",
+	  cargo: []
+  });
 
 	useEffect(() => {
 		getUsuarioLista(page, 50).then((value) => {
@@ -44,16 +41,11 @@ export default function Usuarios() {
 		})
 	}, [page]);
 
-  const [filters, setFilters] = useState({
-    cargo: 'Todos Cargos',
-    sort: 'Nome (A-Z)'
-  });
-
-  const [newUser, setNewUser] = useState({
-    username: '',
-    email: '',
-    cargo: ''
-  });
+  const handleUpdate = () => {
+    getUsuarioLista(page, 50).then((value) => {
+			setUsers(value);
+		})
+  }
 
   // Função para aplicar os filtros
   const applyFilters = () => {
@@ -90,6 +82,61 @@ export default function Usuarios() {
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewUser(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleEdit = (user) => {
+    setEditId(user.id);
+    setNewUser({
+      username: user.username,
+      email: user.email,
+      cargo: user.cargo
+    });
+    setShowAddModal(true);
+  };
+
+  const handleDelete = (userId) => {
+    deleteUsuario(userId).then(() => {
+      handleUpdate();
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (editId) {
+      patchUsuario(editId, newUser).then(()=>{
+        handleUpdate();
+      })
+      setEditId(null);
+    } else {
+      const x = { ...newUser, cargo: [ newUser.cargo ] }
+      postUsuario(x).then((value) => {
+        handleUpdate(); 
+      })
+    }
+    setShowAddModal(false);
+    setNewUser({
+      username: '',
+      email: '',
+      password: "",
+      cargo: []
+    });
+  };
+
+  const handleModalClose = (e) => {
+    setShowAddModal(false);
+    setEditId(0);
+    setNewUser({
+      username: "",
+      email: "",
+      password: "",
+      cargo: []
+    });
   };
 
   const exportToCSV = () => {
@@ -160,51 +207,6 @@ export default function Usuarios() {
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewUser(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (editingUser) {
-      setUsers(users.map(user =>
-        user.id === editingUser.id
-          ? { ...newUser, id: editingUser.id }
-          : user
-      ));
-      setEditingUser(null);
-    } else {
-      const userToAdd = {
-        ...newUser,
-        id: Date.now()
-      };
-      setUsers([...users, userToAdd]);
-    }
-
-    setShowAddModal(false);
-    setNewUser({
-      username: '',
-      email: '',
-      cargo: ''
-    });
-  };
-
-  const handleEdit = (user) => {
-    setEditingUser(user);
-    setNewUser({
-      username: user.username,
-      email: user.email,
-      cargo: user.cargo
-    });
-    setShowAddModal(true);
-  };
-
-  const handleDelete = (userId) => {
-    setUsers(users.filter(user => user.id !== userId));
-  };
-
   const totalUsers = users.length;
 
   // Obter cargos únicos para o filtro
@@ -212,20 +214,6 @@ export default function Usuarios() {
 
   return (
     <div className="layout">
-      {/* Sidebar */}
-      <div className="sidebar">
-        <div className="sidebar-header">UserFolio</div>
-        <ul className="sidebar-menu">
-          <li><Link to="/">Dashboard</Link></li>
-          <li><Link to="/">Produtos</Link></li>
-          <li><Link to="/clientes">Clientes</Link></li>
-          <li><Link to="/fornecedores">Fornecedores</Link></li>
-          <li><Link to="/pedidos">Pedidos</Link></li>
-          <li><Link to="/usuarios">Usuários</Link></li>
-          <li><Link to="/login">Login</Link></li>
-        </ul>
-      </div>
-
       {/* Conteúdo Principal */}
       <div className="app-container">
         <header className="app-header">
@@ -239,7 +227,7 @@ export default function Usuarios() {
                 <input type="text" placeholder="Pesquisar usuários..." />
                 <div className="search-icon">🔍</div>
               </div>
-              <button className="btn primary new-user-btn" onClick={() => { setEditingUser(null); setShowAddModal(true); }}>
+              <button className="btn primary new-user-btn" onClick={() => { setEditId(null); setShowAddModal(true); }}>
                 <span>+</span> Novo Usuário
               </button>
             </div>
@@ -294,13 +282,14 @@ export default function Usuarios() {
                 <button className="btn export-btn" onClick={exportToCSV}>📄 Exportar CSV</button>
                 <button className="btn export-btn" onClick={exportToExcel}>📊 Exportar Excel</button>
                 <button className="btn export-btn" onClick={exportToPDF}>📑 Exportar PDF</button>
-                <button className="btn refresh-btn">🔄 Atualizar</button>
+                <button className="btn refresh-btn" onClick={handleUpdate} >🔄 Atualizar</button>
               </div>
             </div>
 
             <table className="user-table">
               <thead>
                 <tr>
+                  <th>CODIGO</th>
                   <th>NOME</th>
                   <th>EMAIL</th>
                   <th>CARGO</th>
@@ -309,7 +298,8 @@ export default function Usuarios() {
               <tbody>
                 {filteredUsers.map(user => (
                   <tr key={user.id}>
-                    <td>{user.name}</td>
+                    <td>{user.id}</td>
+                    <td>{user.username}</td>
                     <td>{user.email}</td>
                     <td>{user.cargo}</td>
                     <td className="action-buttons">
@@ -330,30 +320,45 @@ export default function Usuarios() {
 
       {/* Modal */}
       {showAddModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>{editingUser ? 'Editar Usuário' : 'Adicionar Novo Usuário'}</h2>
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label>Nome</label>
-                <input type="text" name="name" value={newUser.name} onChange={handleInputChange} required />
-              </div>
-              <div className="form-group">
-                <label>Email</label>
-                <input type="email" name="email" value={newUser.email} onChange={handleInputChange} required />
-              </div>
-              <div className="form-group">
-                <label>Cargo</label>
-                <input type="text" name="cargo" value={newUser.cargo} onChange={handleInputChange} required />
-              </div>
-              <div className="modal-actions">
-                <button type="button" className="btn secondary" onClick={() => setShowAddModal(false)}>Cancelar</button>
-                <button type="submit" className="btn primary">{editingUser ? 'Atualizar' : 'Adicionar'}</button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <Modal 
+          editId={editId} 
+          handleSubmit={handleSubmit}
+          handleInputChange={handleInputChange}
+          newUser={newUser}
+          handlerModalClose={handleModalClose}/>
       )}
     </div>
   );
+}
+
+function Modal({ editId, handleSubmit, handleInputChange, newUser, handlerModalClose }) {
+  return (
+    <div className="modal-overlay">
+      <div className="modal">
+        <h2>{editId ? 'Editar Usuário' : 'Adicionar Novo Usuário'}</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Nome</label>
+            <input type="text" name="username" value={newUser.username} onChange={handleInputChange} required />
+          </div>
+          <div className="form-group">
+            <label>Email</label>
+            <input type="email" name="email" value={newUser.email} onChange={handleInputChange} required />
+          </div>
+          <div className="form-group">
+            <label>Senha</label>
+            <input type="text" name="password" value={newUser.password} onChange={handleInputChange} required />
+          </div>
+          <div className="form-group">
+            <label>Cargo</label>
+            <input type="text" name="cargo" value={newUser.cargo} onChange={handleInputChange} required />
+          </div>
+          <div className="modal-actions">
+            <button type="button" className="btn secondary" onClick={handlerModalClose}>Cancelar</button>
+            <button type="submit" className="btn primary">{editId ? 'Atualizar' : 'Adicionar'}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
 }

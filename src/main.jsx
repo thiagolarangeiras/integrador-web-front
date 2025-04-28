@@ -2,7 +2,7 @@ import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, Navigate, RouterProvider, useNavigate, Link, Outlet } from 'react-router-dom'
 
-import { getTeste, logout } from './requests.js'
+import { getTesteLogin, logout } from './requests.js'
 
 import List from './example/List.jsx'
 import Teste from './example/Teste.jsx'
@@ -22,22 +22,27 @@ import Vendedores from './pages/Vendedores.jsx'
 
 function Auth({ children }) {
     const navigate = useNavigate();
-    const [auth, setAuth] = useState(true);
+    const [auth, setAuth] = useState(false);
 
     useEffect(() => {
         if (!localStorage.getItem("token")){
             navigate("/login");
         }
-        getTeste().then((value) => {
+        getTesteLogin().then((value) => {
             setAuth(value);
+            if (!value) {
+                logout()
+                navigate("/login");
+            }
         })
     }, []);
 
-    useEffect(() => {
-        if (!auth) navigate("/login");
-    }, [auth]);
+    // useEffect(() => {
+    //     if (!auth) navigate("/login");
+    // }, [auth]);
 
-    return children;
+    if (auth) return children;
+    return <></>;
 }
 
 function Logout() {
@@ -45,7 +50,7 @@ function Logout() {
 
     useEffect(() => {
         logout();
-        navigate("/");
+        navigate("/login");
     }, []);
     return <></>;
 }
