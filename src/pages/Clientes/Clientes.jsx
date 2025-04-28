@@ -339,9 +339,6 @@ function Clientes() {
 
   return (
     <div className="layout">
-      {/* Sidebar */}
-      
-
       {/* Conteúdo Principal */}
       <div className="app-container">
         <header className="app-header">

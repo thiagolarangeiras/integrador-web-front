@@ -1,6 +1,6 @@
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, Navigate, RouterProvider, useNavigate, Link, Outlet } from 'react-router-dom'
+import { createBrowserRouter, Navigate, RouterProvider, useNavigate, Outlet, useLocation } from 'react-router-dom'
 
 import { getTesteLogin, logout } from './requests.js'
 
@@ -25,7 +25,7 @@ function Auth({ children }) {
     const [auth, setAuth] = useState(false);
 
     useEffect(() => {
-        if (!localStorage.getItem("token")){
+        if (!localStorage.getItem("token")) {
             navigate("/login");
         }
         getTesteLogin().then((value) => {
@@ -60,21 +60,75 @@ function Redirec() {
 }
 
 function SideBar() {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [ loc, setLoc ] = useState("");
+    
+    const isCurrentPath = (path) => {
+        console.log(path)
+        if (location == path) return true;
+        return false;
+    }
+
     return (
         <>
+            <nav>
             <div className="sidebar">
-                <div className="sidebar-header">Side Bar Official</div>
+                <div className="sidebar-header">Side Bar Official</div>    
                 <ul className="sidebar-menu">
-                    <li><Link to="/">Dashboard</Link></li>
-                    <li><Link to="/produtos">Produtos</Link></li>
-                    <li><Link to="/clientes">Clientes</Link></li>
-                    <li><Link to="/fornecedores">Fornecedores</Link></li>
-                    <li><Link to="/pedidos">Pedidos</Link></li>
-                    <li><Link to="/usuarios">Usuários</Link></li>
-                    <li><Link to="/logout">Sair</Link></li>
+                    <li 
+                        onClick={() => navigate("/")} 
+                        className={isCurrentPath("/") ? "active" : "inactive"}
+                    >Home</li>
+                    
+                    <li 
+                        onClick={() => navigate("/clientes")}
+                        className={isCurrentPath("/clientes") ? "active" : "inactive"}
+                    >Clientes</li>
+                    
+                    <li 
+                        onClick={() => navigate("/fornecedores")}
+                        className={isCurrentPath("/fornecedores") ? "active" : "inactive"}
+                    >Fornecedores</li>
+                    
+                    <li 
+                        onClick={() => navigate("/marca")}
+                        className={isCurrentPath ? "active" : "inactive"}
+                    >Marca</li>
+                    
+                    <li 
+                        onClick={() => navigate("/pedidos/entrada")}
+                        className={isCurrentPath ? "active" : "inactive"}
+                    >Pedidos de Entrada</li>
+                    
+                    <li 
+                        onClick={() => navigate("/pedidos/saida")}
+                        className={isCurrentPath ? "active" : "inactive"}
+                    >Pedidos de Saída</li>
+                    
+                    <li 
+                        onClick={() => navigate("/produtos")}
+                        className={isCurrentPath ? "active" : "inactive"}
+                    >Produtos</li>
+                    
+                    <li 
+                        onClick={() => navigate("/usuarios")}
+                        className={isCurrentPath ? "active" : "inactive"}
+                    >Usuarios</li>
+                    
+                    <li 
+                        onClick={() => navigate("/vendedores")}
+                        className={isCurrentPath ? "active" : "inactive"}
+                    >Vendedores</li>                    
+                    
+                    <li 
+                        onClick={() => navigate("/logout")}
+                        className={isCurrentPath ? "active" : "inactive"}
+                    >Sair</li>
                 </ul>
             </div>
-            <Outlet/>
+            </nav>
+            <Outlet />
         </>
     );
 }
@@ -94,9 +148,9 @@ const router = createBrowserRouter([
     },
     {
         path: "/signin",
-        element: <SignUp_Up /> 
+        element: <SignUp_Up />
     },
-	{
+    {
         path: "/example/list",
         element: <List />
     },
@@ -106,7 +160,7 @@ const router = createBrowserRouter([
     },
     {
         //path: "/",
-        element: <Auth> <SideBar /> </Auth>,
+        element: <SideBar />,
         children: [
             {
                 path: "/",
@@ -151,5 +205,5 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
     <StrictMode>
         <RouterProvider router={router} />
-  </StrictMode >
+    </StrictMode >
 )

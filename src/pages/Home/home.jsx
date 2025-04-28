@@ -251,20 +251,6 @@ function Home() {
 
   return (
     <div className="layout">
-      {/* Sidebar atualizado com Links */}
-      <div className="sidebar">
-        <div className="sidebar-header">ProductFolio</div>
-        <ul className="sidebar-menu">
-          <li><Link to="/">Dashboard</Link></li>
-          <li><Link to="/">Produtos</Link></li>
-          <li><Link to="/clientes">Clientes</Link></li>
-          <li><Link to="/fornecedores">Fornecedores</Link></li>
-          <li><Link to="/pedidos">Pedidos</Link></li>
-          <li><Link to="/usuarios">Usuários</Link></li>
-          <li><Link to="/login">Login</Link></li>
-        </ul>
-      </div>
-
       {/* Conteúdo Principal */}
       <div className="app-container">
         <header className="app-header">

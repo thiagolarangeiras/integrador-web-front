@@ -81,20 +81,6 @@ function PedidosEntrada() {
 
   return (
     <div className="layout-container">
-      <aside className="sidebar">
-        <h2>ProductFolio</h2>
-        <nav>
-          <ul>
-            <li><a href="/produtos">Dashboard</a></li>
-            <li className="active"><a href="/entrada">Entrada</a></li>
-            <li><a href="/saida">Saída</a></li>
-            <li><a href="/clientes">Clientes</a></li>
-            <li><a href="/parcelas">Parcelas</a></li>
-            <li><a href="/relatorios">Relatórios</a></li>
-          </ul>
-        </nav>
-      </aside>
-
       <main className="app-container">
         <header className="app-header">
           <h1>Pedidos de Entrada</h1>
