@@ -204,6 +204,7 @@ export async function getUsuarioLista(page, count) {
         },
     };
     const response = await fetch(`${url}/usuario?page=${page}&count=${count}`, init);
+    if(response.status != 200) return null;
     return await response.json();
 }
 

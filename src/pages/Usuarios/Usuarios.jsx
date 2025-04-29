@@ -37,13 +37,15 @@ export default function Usuarios() {
 
 	useEffect(() => {
 		getUsuarioLista(page, 50).then((value) => {
-			setUsers(value);
+      if (value != null)
+			  setUsers(value);
 		})
 	}, [page]);
 
   const handleUpdate = () => {
     getUsuarioLista(page, 50).then((value) => {
-			setUsers(value);
+			if (value != null)
+			  setUsers(value);
 		})
   }
 

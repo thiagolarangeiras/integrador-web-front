@@ -61,12 +61,9 @@ function Redirec() {
 
 function SideBar() {
     const navigate = useNavigate();
-    const location = useLocation();
-    const [ loc, setLoc ] = useState("");
-    
+    const location = useLocation();    
     const isCurrentPath = (path) => {
-        console.log(path)
-        if (location == path) return true;
+        if (location.pathname == path) return true;
         return false;
     }
 
@@ -74,57 +71,54 @@ function SideBar() {
         <>
             <nav>
             <div className="sidebar">
-                <div className="sidebar-header">Side Bar Official</div>    
+                <div className="sidebar-header">ERP web</div>    
                 <ul className="sidebar-menu">
                     <li 
                         onClick={() => navigate("/")} 
-                        className={isCurrentPath("/") ? "active" : "inactive"}
+                        className={isCurrentPath("/") ? "active" : ""}
                     >Home</li>
                     
                     <li 
                         onClick={() => navigate("/clientes")}
-                        className={isCurrentPath("/clientes") ? "active" : "inactive"}
+                        className={isCurrentPath("/clientes") ? "active" : ""}
                     >Clientes</li>
                     
                     <li 
                         onClick={() => navigate("/fornecedores")}
-                        className={isCurrentPath("/fornecedores") ? "active" : "inactive"}
+                        className={isCurrentPath("/fornecedores") ? "active" : ""}
                     >Fornecedores</li>
                     
                     <li 
                         onClick={() => navigate("/marca")}
-                        className={isCurrentPath ? "active" : "inactive"}
+                        className={isCurrentPath("/marca") ? "active" : ""}
                     >Marca</li>
                     
                     <li 
                         onClick={() => navigate("/pedidos/entrada")}
-                        className={isCurrentPath ? "active" : "inactive"}
+                        className={isCurrentPath("/pedidos/entrada") ? "active" : ""}
                     >Pedidos de Entrada</li>
                     
                     <li 
                         onClick={() => navigate("/pedidos/saida")}
-                        className={isCurrentPath ? "active" : "inactive"}
+                        className={isCurrentPath("/pedidos/saida") ? "active" : ""}
                     >Pedidos de Saída</li>
                     
                     <li 
                         onClick={() => navigate("/produtos")}
-                        className={isCurrentPath ? "active" : "inactive"}
+                        className={isCurrentPath("/produtos") ? "active" : ""}
                     >Produtos</li>
                     
                     <li 
                         onClick={() => navigate("/usuarios")}
-                        className={isCurrentPath ? "active" : "inactive"}
+                        className={isCurrentPath("/usuarios") ? "active" : ""}
                     >Usuarios</li>
                     
                     <li 
                         onClick={() => navigate("/vendedores")}
-                        className={isCurrentPath ? "active" : "inactive"}
+                        className={isCurrentPath("/vendedores") ? "active" : ""}
                     >Vendedores</li>                    
                     
-                    <li 
-                        onClick={() => navigate("/logout")}
-                        className={isCurrentPath ? "active" : "inactive"}
-                    >Sair</li>
+                    <li onClick={() => navigate("/logout")}>Sair</li>
                 </ul>
             </div>
             </nav>
