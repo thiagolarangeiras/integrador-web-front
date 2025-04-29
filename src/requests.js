@@ -8,6 +8,8 @@ export function convertData(data){
 // ["Access-Control-Allow-Origin", "http://localhost:5173"],
 // ["Access-Control-Allow-Credentials", "true"]
 
+//Login
+
 export async function getTeste() {
     const init = {
         method: "GET",
@@ -64,6 +66,7 @@ export async function logout() {
     return true;
 }
 
+// Tentativa de padrao
 export const callTypes = {
     vendedor: "vendedor",
     usuario: "usuario",
@@ -97,7 +100,7 @@ export async function get(type, id) {
     return await response.json();
 }
 
-export async function getLista(type, page, count) {
+export async function getLista(type, page, count= 50) {
     const token = localStorage.getItem("token");
     const init = {
         method: "GET",
@@ -137,7 +140,7 @@ export async function post(type, dados) {
 export async function patch(type, id, dados) {
     const token = localStorage.getItem("token");
     const init = {
-        method: "PUT",
+        method: "PATCH",
         mode: "cors",
         cache: "no-cache",
         credentials: "same-origin",
@@ -168,9 +171,11 @@ export async function deleteCall(type, id) {
         },
     };
     const response = await fetch(`${url}/${type}/${id}`, init);
-    return await response.json();
+    if(response.status === 200) return true;
+    return false;
 }
 
+//Usuarios
 export async function getUsuario(id) {
     const token = localStorage.getItem("token");
     const init = {
@@ -263,4 +268,22 @@ export async function deleteUsuario(id) {
     const response = await fetch(`${url}/usuario/${id}`, init);
     if(response.status === 200) return true;
     return false;
+}
+
+
+//Marca
+export async function getMarcaLista(page) {
+    return getLista(callTypes.marca, page);
+}
+
+export async function postMarca(dados) {
+    return post(callTypes.marca, dados);
+}
+
+export async function patchMarca(id, dados) {
+    return patch(callTypes.marca, id, dados);
+}
+
+export async function deleteMarca(id) {
+    return deleteCall(callTypes.marca, id);
 }
