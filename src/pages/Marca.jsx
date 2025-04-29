@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { getMarcaLista, postMarca, patchMarca, deleteMarca } from "../requests";
-//import "./styles.css";
 
 export default function Marca() {
 	const [page, setPage] = useState(0);
