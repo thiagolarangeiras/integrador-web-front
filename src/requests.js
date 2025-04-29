@@ -287,3 +287,20 @@ export async function patchMarca(id, dados) {
 export async function deleteMarca(id) {
     return deleteCall(callTypes.marca, id);
 }
+
+//Produtos
+export async function getProdutoLista(page) {
+    return getLista(callTypes.produto, page);
+}
+
+export async function postProduto(dados) {
+    return post(callTypes.produto, dados);
+}
+
+export async function patchProduto(id, dados) {
+    return patch(callTypes.produto, id, dados);
+}
+
+export async function deleteProduto(id) {
+    return deleteCall(callTypes.produto, id);
+}
