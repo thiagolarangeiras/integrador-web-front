@@ -17,7 +17,7 @@ const defaultItem = {
 
 export default function Produtos() {
 	const [page, setPage] = useState(0);
-	const [showAddModal, setShowAddModal] = useState(true);
+	const [showAddModal, setShowAddModal] = useState(false);
 	const [editId, setEditId] = useState(null);
 	const [items, setItems] = useState([{ ...defaultItem, id: 0 }]);
 	const [newItem, setNewItem] = useState(defaultItem);
