@@ -20,6 +20,8 @@ import Produtos from "./pages/Produtos.jsx"
 import Usuarios from './pages/Usuarios/Usuarios.jsx'
 import Vendedores from './pages/Vendedores.jsx'
 
+import "./styles.css"
+
 function Auth({ children }) {
     const navigate = useNavigate();
     const [auth, setAuth] = useState(false);

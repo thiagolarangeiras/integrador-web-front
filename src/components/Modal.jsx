@@ -19,3 +19,40 @@ export default function Modal({ editId, newItem, inputValues, handleSubmit, hand
 		</div>
 	);
 }
+
+export function SearchModal() {
+	return (
+		<table className="product-table">
+			<thead>
+				<tr>
+					<th>Codigo</th>
+					<th>Nome</th>
+					<th>Ações</th>
+				</tr>
+			</thead>
+			<tbody>
+				{items.map(item => (
+					<tr key={item.id}>
+						{colunas.map(coluna => (
+							<td>{item[coluna.value]}</td>
+						))}
+						{/* {Object.values(item).map((value, key) => (
+								
+            					<td key={key}>{value}</td>
+          					))} */}
+						{/* <td>{item.id}</td>
+							<td className="product-cell">
+								<span className="product-name">{item.nome}</span>
+								<span className="product-desc">{ }</span>
+							</td> */}
+						<td><span className={`status-badge ${item.status}`}>{item.status === 'active' ? 'Ativo' : 'Inativo'}</span></td>
+						<td className="action-buttons">
+							<button className="btn action-btn edit-btn" onClick={() => handleEdit(item)}>✏️</button>
+							<button className="btn action-btn delete-btn" onClick={() => handleDelete(item.id)}>🗑️</button>
+						</td>
+					</tr>
+				))}
+			</tbody>
+		</table>
+	);
+}

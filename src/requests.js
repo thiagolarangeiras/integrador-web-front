@@ -270,10 +270,27 @@ export async function deleteUsuario(id) {
     return false;
 }
 
-
 //Marca
 export async function getMarcaLista(page) {
     return getLista(callTypes.marca, page);
+}
+
+export async function getMarcaListaNome(name, page, count=50) {
+    const token = localStorage.getItem("token");
+    const init = {
+        method: "GET",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        redirect: "follow",
+        referrerPolicy: "no-referrer",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+    };
+    const response = await fetch(`${url}/marca?page=${page}&count=${count}&name=${name}`, init);
+    return await response.json();
 }
 
 export async function postMarca(dados) {
@@ -303,4 +320,27 @@ export async function patchProduto(id, dados) {
 
 export async function deleteProduto(id) {
     return deleteCall(callTypes.produto, id);
+}
+
+//Fornecedor
+export async function getFornecedorLista(page, count=50) {
+    return getLista(callTypes.fornecedor, page, count);
+}
+
+export async function getFornecedorListaNome(name, page, count=50) {
+    const token = localStorage.getItem("token");
+    const init = {
+        method: "GET",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        redirect: "follow",
+        referrerPolicy: "no-referrer",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+    };
+    const response = await fetch(`${url}/fornecedor?page=${page}&count=${count}&name=${name}`, init);
+    return await response.json();
 }
