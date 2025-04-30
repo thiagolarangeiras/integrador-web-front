@@ -27,10 +27,6 @@ export default function Table({ nome, colunas, items, handleEdit, handleDelete, 
 							{colunas.map(coluna => (
 								<td>{item[coluna.value]}</td>
 							))}
-							{/* {Object.values(item).map((value, key) => (
-								
-            					<td key={key}>{value}</td>
-          					))} */}
 							{/* <td>{item.id}</td>
 							<td className="product-cell">
 								<span className="product-name">{item.nome}</span>

@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
 import { getMarcaLista, postMarca, patchMarca, deleteMarca } from "../requests";
+import Header from "../components/Header";
+import Cards from "../components/Cards";
+import Filters from "../components/Filters";
+import Table from "../components/Table";
+
+const defaultItem = {
+    nome: null,
+} 
 
 export default function Marca() {
 	const [page, setPage] = useState(0);
@@ -9,16 +17,14 @@ export default function Marca() {
 		{
 			id: 1,
 			nome: 'MARCA EXEMPLO',
-		},
-
+		}
 	]);
-	const [newMarca, setNewMarca] = useState({
-		nome: "",
-	});
+	const [newMarca, setNewMarca] = useState(defaultItem);
+
 	const tableColums = [
-		"Codigo",
-		"Nome",
-	]
+		{label: "Codigo", value: "id" },
+		{label: "Nome", value: "nome" },
+	];
 
 	useEffect(() => {
 		handleUpdate();
@@ -84,16 +90,17 @@ export default function Marca() {
 			{/* Conteúdo Principal */}
 			<div className="app-container">
 				<Header
+					nomePesquisa={"Marca"}
 					nomeBotao={"Nova Marca"}
 					handleNew={handleNew}
 				/>
 
 				<main className="content-area">
 					{/* Filtros */}
-					<Filtros uniqueCategories={[0]} />
+					<Filters uniqueCategories={[0]} />
 
 					{/* Cartões */}
-					<Cartoes
+					<Cards
 						totalProducts={0}
 						activeProducts={0}
 						inactiveProducts={0}
@@ -101,15 +108,16 @@ export default function Marca() {
 					/>
 
 					{/* Tabela de Produtos */}
-					<Tabela
+					<Table
+						nome={"Marcas"}
+						items={marca}
+						colunas={tableColums}
+						handleEdit={handleEdit}
+						handleDelete={handleDelete}
+						handleUpdate={handleUpdate}
 						exportToCSV={exportToCSV}
 						exportToExcel={exportToExcel}
 						exportToPDF={exportToPDF}
-						items={marca}
-						handleEdit={handleEdit}
-						handleDelete={handleDelete}
-						colunas={tableColums}
-						handleUpdate={handleUpdate}
 					/>
 				</main>
 			</div>
@@ -143,146 +151,6 @@ function Modal({ editId, newMarca, handleSubmit, handleModalClose, handleInputCh
 						<button type="submit" className="btn primary">{editId ? 'Atualizar' : 'Adicionar'}</button>
 					</div>
 				</form>
-			</div>
-		</div>
-	);
-}
-
-function Header({ nomeBotao, handleNew }) {
-	return (
-		<header className="app-header">
-			<div className="header-content">
-				<div className="logo-container">
-					<div className="logo-icon">🛍️</div>
-					<h1>ProductFolio <span>Manager</span></h1>
-				</div>
-				<div className="header-actions">
-					<div className="search-box">
-						<input type="text" placeholder="Pesquisar produtos..." />
-						<div className="search-icon">🔍</div>
-					</div>
-					<button className="btn primary new-product-btn" onClick={handleNew}>
-						<span>+</span> {nomeBotao}
-					</button>
-				</div>
-			</div>
-		</header>
-	);
-}
-
-function Tabela({ nome, colunas, items, handleEdit, handleDelete, handleUpdate, exportToCSV, exportToExcel, exportToPDF, }) {
-	return (
-		<div className="product-table-container">
-			<div className="table-header">
-				<h2>Lista de {nome}</h2>
-				<div className="table-actions">
-					<button className="btn export-btn" onClick={exportToCSV}>📄 Exportar CSV</button>
-					<button className="btn export-btn" onClick={exportToExcel}>📊 Exportar Excel</button>
-					<button className="btn export-btn" onClick={exportToPDF}>📑 Exportar PDF</button>
-					<button className="btn refresh-btn" onClick={handleUpdate}>🔄 Atualizar</button>
-				</div>
-			</div>
-
-			<table className="product-table">
-				<thead>
-					<tr>
-						{colunas.map(coluna => (
-							<th>{coluna}</th>
-						))}
-						<th>STATUS</th>
-						<th>AÇÕES</th>
-					</tr>
-				</thead>
-				<tbody>
-					{items.map(item => (
-						<tr key={item.id}>
-							<td>{item.id}</td>
-							<td className="product-cell">
-								<span className="product-name">{item.nome}</span>
-								<span className="product-desc">{ }</span>
-							</td>
-							<td><span className={`status-badge ${item.status}`}>{item.status === 'active' ? 'Ativo' : 'Inativo'}</span></td>
-							<td className="action-buttons">
-								<button className="btn action-btn edit-btn" onClick={() => handleEdit(item)}>✏️</button>
-								<button className="btn action-btn delete-btn" onClick={() => handleDelete(item.id)}>🗑️</button>
-							</td>
-						</tr>
-					))}
-				</tbody>
-			</table>
-
-			<div className="table-footer">
-				<span className="showing-text">👁️ Mostrando {items.length} de {items.length} produtos</span>
-			</div>
-		</div>
-	);
-}
-
-function Cartoes({ totalProducts, activeProducts, inactiveProducts, lowStockProducts }) {
-	return (
-		<div className="stats-cards">
-			<div className="stat-card">
-				<span className="stat-value">{totalProducts}</span>
-				<span className="stat-label">Produtos Totais</span>
-			</div>
-			<div className="stat-card">
-				<span className="stat-value">{activeProducts}</span>
-				<span className="stat-label">Ativos</span>
-			</div>
-			<div className="stat-card">
-				<span className="stat-value">{inactiveProducts}</span>
-				<span className="stat-label">Inativos</span>
-			</div>
-			<div className="stat-card">
-				<span className="stat-value">{lowStockProducts}</span>
-				<span className="stat-label">Estoque Baixo</span>
-			</div>
-		</div>
-	);
-}
-
-function Filtros({ uniqueCategories }) {
-	return (
-		<div className="filters-section">
-			<div className="filter-group">
-				<label>Categoria</label>
-				<select
-					className="filter-select"
-					name="category"
-					value={""}
-					onChange={""}
-				>
-					{uniqueCategories.map(category => (
-						<option key={category} value={category}>{category}</option>
-					))}
-				</select>
-			</div>
-			<div className="filter-group">
-				<label>Status</label>
-				<select
-					className="filter-select"
-					name="status"
-					value={"filters.status"}
-					onChange={"handleFilterChange"}
-				>
-					<option>Todos Status</option>
-					<option>Ativo</option>
-					<option>Inativo</option>
-				</select>
-			</div>
-			<div className="filter-group">
-				<label>Ordenar por</label>
-				<select
-					className="filter-select"
-					name="sort"
-					value={"filters.sort"}
-					onChange={"handleFilterChange"}
-				>
-					<option>Nome (A-Z)</option>
-					<option>Nome (Z-A)</option>
-					<option>Preço (↑)</option>
-					<option>Preço (↓)</option>
-				</select>
 			</div>
 		</div>
 	);
