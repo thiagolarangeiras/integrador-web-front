@@ -3,6 +3,7 @@ import * as XLSX from 'xlsx';
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { postUsuario, patchUsuario, getUsuarioLista, deleteUsuario } from '../../requests';
+import './styles.css';
 
 const usuarioStruct = {
 	id: 0,
