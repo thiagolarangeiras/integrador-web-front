@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import './style.css';
-import { postLogin } from '../../../requests';
+import { postLogin } from '../requests';
 
 export default function In() {
     const navigate = useNavigate();

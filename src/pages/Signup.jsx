@@ -1,5 +1,3 @@
-import './style.css';
-
 function Up() {
   return (
     <div className="signup-container">

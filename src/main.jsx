@@ -1,24 +1,20 @@
-import { StrictMode, useEffect, useState } from 'react'
-import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, Navigate, RouterProvider, useNavigate, Outlet, useLocation } from 'react-router-dom'
+import { StrictMode, useEffect, useState } from "react";
+import { createRoot } from "react-dom/client";
+import { createBrowserRouter, Navigate, RouterProvider, useNavigate, Outlet, useLocation } from "react-router-dom";
 
-import { getTesteLogin, logout } from './requests.js'
+import { getTesteLogin, logout } from "./requests.js";
 
-import List from './example/List.jsx'
-import Teste from './example/Teste.jsx'
-
-import Login from './pages/SignUp_In/In/in.jsx'
-import SignUp_Up from './pages/SignUp_In/Up/Up.jsx'
-
-import Home from './pages/Home/home.jsx'
-import Clientes from "./pages/Clientes/Clientes.jsx"
-import Fornecedores from "./pages/Fornecedores/Fornecedores.jsx"
-import Marca from "./pages/Marca.jsx"
-import PedidosEntrada from "./pages/PedidosEntrada/PedidosEntrada.jsx"
-import PedidosSaida from "./pages/PedidosSaida.jsx"
-import Produtos from "./pages/Produtos.jsx"
-import Usuarios from './pages/Usuarios/Usuarios.jsx'
-import Vendedores from './pages/Vendedores.jsx'
+import Login from "./pages/Signin.jsx";
+import SignUp_Up from "./pages/Signup.jsx";
+import Home from "./pages/Home.jsx";
+import Clientes from "./pages/Clientes.jsx";
+import Fornecedores from "./pages/Fornecedores.jsx";
+import Marca from "./pages/Marca.jsx";
+import PedidosEntrada from "./pages/PedidosEntrada.jsx";
+import PedidosSaida from "./pages/PedidosSaida.jsx";
+import Produtos from "./pages/Produtos.jsx";
+import Usuarios from "./pages/Usuarios.jsx";
+import Vendedores from "./pages/Vendedores.jsx";
 
 import "./styles.css"
 
@@ -145,14 +141,6 @@ const router = createBrowserRouter([
     {
         path: "/signin",
         element: <SignUp_Up />
-    },
-    {
-        path: "/example/list",
-        element: <List />
-    },
-    {
-        path: "/example/teste",
-        element: <Teste />
     },
     {
         //path: "/",

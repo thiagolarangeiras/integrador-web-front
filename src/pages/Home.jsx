@@ -3,7 +3,6 @@ import * as XLSX from 'xlsx';
 import { jsPDF } from "jspdf";
 import { Link } from 'react-router-dom';
 import autoTable from "jspdf-autotable";
-import './styles.css';
 
 function Home() {
   const [showAddModal, setShowAddModal] = useState(false);
