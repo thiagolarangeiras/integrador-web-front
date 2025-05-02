@@ -101,10 +101,12 @@ export default function Marca() {
 
 					{/* Cartões */}
 					<Cards
-						totalProducts={0}
-						activeProducts={0}
-						inactiveProducts={0}
-						lowStockProducts={0}
+						items={[
+							{value: 0, label: "CARD"},
+							{value: 0, label: "CARD"},
+							{value: 0, label: "CARD"},
+							{value: 0, label: "CARD"},	
+						]}
 					/>
 
 					{/* Tabela de Produtos */}
