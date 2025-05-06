@@ -1,9 +1,26 @@
-const url = "https://web.larangeira.site";
+const url = "http://localhost:8080";
 
 export function convertData(data){
     data = new Date(data);
     return `${data.getDate().toString().padStart(2, '0')}/${(data.getMonth() + 1).toString().padStart(2, '0')}/${data.getFullYear()}`;
 }
+
+function getInit(method, token){
+    let init = {
+        method: method,
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        redirect: "follow",
+        referrerPolicy: "no-referrer",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+    };
+    return init;
+}
+
 
 // ["Access-Control-Allow-Origin", "http://localhost:5173"],
 // ["Access-Control-Allow-Credentials", "true"]
@@ -306,8 +323,12 @@ export async function deleteMarca(id) {
 }
 
 //Produtos
-export async function getProdutoLista(page) {
-    return getLista(callTypes.produto, page);
+export async function getProdutoLista(page, count=50) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/produto?page=${page}&count=${count}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
 }
 
 export async function postProduto(dados) {
@@ -342,5 +363,91 @@ export async function getFornecedorListaNome(name, page, count=50) {
         },
     };
     const response = await fetch(`${url}/fornecedor?page=${page}&count=${count}&name=${name}`, init);
+    return await response.json();
+}
+
+//Clientes
+export async function getClienteLista(page, count=50) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/cliente?page=${page}&count=${count}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function getClienteListaNome(name, page, count=50) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/cliente?page=${page}&count=${count}&name=${name}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function postCliente(dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("POST", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/cliente`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function patchCliente(id, dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("PATCH", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/cliente/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function deleteCliente(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("DELETE", token);
+    const response = await fetch(`${url}/cliente/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+//Vendedores
+export async function getVendedorLista(page, count=50) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/vendedor?page=${page}&count=${count}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function getVendedorListaNome(name, page, count=50) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/vendedor?page=${page}&count=${count}&name=${name}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function postVendedor(dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("POST", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/vendedor`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function patchVendedor(id, dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("PATCH", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/vendedor/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function deleteVendedor(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("DELETE", token);
+    const response = await fetch(`${url}/vendedor/${id}`, init);
+    if (response.status != 200) return null;
     return await response.json();
 }

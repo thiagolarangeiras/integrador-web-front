@@ -24,9 +24,18 @@ export default function Table({ nome, colunas, items, handleEdit, handleDelete, 
 				<tbody>
 					{items.map(item => (
 						<tr key={item.id}>
-							{colunas.map(coluna => (
-								<td>{item[coluna.value]}</td>
-							))}
+							{colunas.map(coluna => {
+								let keys = coluna.value.split(".")
+								if(keys.length > 1){
+									let result = item;
+									for (const key of keys){
+										result = result[key];
+									}
+									return (<td>{result}</td>)
+								}
+								return (<td>{item[coluna.value]}</td>)
+								
+							})}
 							{/* <td>{item.id}</td>
 							<td className="product-cell">
 								<span className="product-name">{item.nome}</span>
@@ -46,5 +55,30 @@ export default function Table({ nome, colunas, items, handleEdit, handleDelete, 
 				<span className="showing-text">👁️ Mostrando {items.length} de {items.length} {nome}</span>
 			</div>
 		</div>
+	);
+}
+
+export function TableSearch({ items, handleSelect }) {
+	return (
+		<table className="product-table">
+			<thead>
+				<tr>
+					<th>Codigo</th>
+					<th>Nome</th>
+					<th>AÇÕES</th>
+				</tr>
+			</thead>
+			<tbody>
+				{items.map(item => (
+					<tr key={item.id}>
+						<td>{item.id}</td>
+						<td>{item.nome}</td>
+						<td className="action-buttons">
+							<button className="btn action-btn edit-btn" onClick={() => handleSelect(item)}>✅</button>
+						</td>
+					</tr>
+				))}
+			</tbody>
+		</table>
 	);
 }

@@ -5,6 +5,16 @@ import Cards from "../components/Cards";
 import Table from "../components/Table";
 import Filters from "../components/Filters";
 
+const defaultMarca = {
+	id: null,
+	nome: null,
+}
+
+const defaultFornecedor = {
+	id: null,
+    nome: null,
+}
+
 const defaultItem = {
 	idFornecedor: null,
 	idMarca: null,
@@ -13,6 +23,8 @@ const defaultItem = {
 	valorCompra: null,
 	valorVenda: null,
 	qtEstoque: null,
+	marca: defaultMarca,
+	fornecedor: defaultFornecedor,
 }
 
 export default function Produtos() {
@@ -26,8 +38,8 @@ export default function Produtos() {
 		{ label: "Codigo", value: "id" },
 		{ label: "Nome", value: "nome" },
 		{ label: "Descrição", value: "descricao" },
-		{ label: "Marca", value: "idMarca" },
-		{ label: "Fornecedor", value: "idFornecedor" },
+		{ label: "Marca", value: "marca.nome" },
+		{ label: "Fornecedor", value: "fornecedor.nome" },
 		{ label: "V. Compra", value: "valorCompra" },
 		{ label: "V. Venda", value: "valorVenda" },
 		{ label: "Estoque", value: "qtEstoque" },
@@ -54,7 +66,10 @@ export default function Produtos() {
 
 	function handleUpdate() {
 		getProdutoLista(page).then((value) => {
-			if (value != null) setItems(value);
+			console.log(value[0]["marca"])
+			if (value != null) {
+				setItems(value);
+			}
 		})
 	}
 
@@ -104,10 +119,10 @@ export default function Produtos() {
 				<main className="content-area">
 					<Filters uniqueCategories={[0]} />
 					<Cards
-						totalProducts={0}
-						activeProducts={0}
-						inactiveProducts={0}
-						lowStockProducts={0}
+						items={[
+							{value: 0, label: "Total de Produtos"},
+							{value: 0, label: "Produtos com baixo estoque"},	
+						]}
 					/>
 					<Table
 						nome={"Produtos"}
@@ -136,11 +151,18 @@ export default function Produtos() {
 	);
 }
 
-function Modal({ editId, newItem, setNewItem, handleSubmit, handleModalClose, handleInputChange }) {
+function Modal({ editId, newItem, setNewItem, handleSubmit, handleModalClose, handleInputChange}) {
 	const [marca, setMarca] = useState("");
 	const [fornecedor, setFornecedor] = useState("");
 	const [showMarcaModal, setShowMarcaModal] = useState(false);
 	const [showFornecedorModal, setShowFornecedorModal] = useState(false);
+	
+	useEffect(()=>{
+		if (editId){
+			setMarca(newItem.marca.nome);
+			setFornecedor(newItem.fornecedor.nome);
+		}
+	}, [])
 
 	function handleMarcaModalOpen() {
 		setShowMarcaModal(true);
