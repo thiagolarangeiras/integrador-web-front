@@ -88,8 +88,6 @@ export const callTypes = {
     vendedor: "vendedor",
     usuario: "usuario",
     produto: "produto",
-    pedidoSaida: "pedido-saida",
-    pedidoSaidaProduto: "pedido-saida-produto",
     pedidoSaidaParcela: "pedido-saida-parcela",
     pedidoEntrada: "pedido-entrada",
     pedidoEntradaProduto: "pedido-entrada-produto",
@@ -323,6 +321,14 @@ export async function deleteMarca(id) {
 }
 
 //Produtos
+export async function getProduto(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/produto/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
 export async function getProdutoLista(page, count=50) {
     const token = localStorage.getItem("token");
     let init = getInit("GET", token);
@@ -450,4 +456,90 @@ export async function deleteVendedor(id) {
     const response = await fetch(`${url}/vendedor/${id}`, init);
     if (response.status != 200) return null;
     return await response.json();
+}
+
+//Pedido Saida
+export async function getPedidoSaida(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/pedido-saida/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function getPedidoSaidaLista(page, count=50) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/pedido-saida?page=${page}&count=${count}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function postPedidoSaida(dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("POST", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/pedido-saida`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function patchPedidoSaida(id, dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("PATCH", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/pedido-saida/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function deletePedidoSaida(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("DELETE", token);
+    const response = await fetch(`${url}/pedido-saida/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+// Pedido Saida Produto
+export async function getPedidoSaidaProduto(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/pedido-saida-produto/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function getPedidoSaidaProdutoLista(page, count=50) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/pedido-saida-produto?page=${page}&count=${count}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function postPedidoSaidaProduto(dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("POST", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/pedido-saida-produto`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function patchPedidoSaidaProduto(id, dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("PATCH", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/pedido-saida-produto/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function deletePedidoSaidaProduto(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("DELETE", token);
+    const response = await fetch(`${url}/pedido-saida-produto/${id}`, init);
+    if (response.status != 200) return false;
+    return true;
 }

@@ -58,6 +58,8 @@ export default function Table({ nome, colunas, items, handleEdit, handleDelete, 
 	);
 }
 
+
+
 export function TableSearch({ items, handleSelect }) {
 	return (
 		<table className="product-table">
