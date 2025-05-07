@@ -90,7 +90,7 @@ export default function Marca() {
 			{/* Conteúdo Principal */}
 			<div className="app-container">
 				<Header
-					nomePesquisa={"Marca"}
+					nomePesquisa={"marca"}
 					nomeBotao={"Nova Marca"}
 					handleNew={handleNew}
 				/>

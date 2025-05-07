@@ -244,8 +244,8 @@ export default function Clientes() {
         <div className="layout">
             <div className="app-container">
                 <Header
-                    nomeBotao={"Novo Produto"}
-                    nomePesquisa={"Produtos"}
+                    nomeBotao={"Novo Cliente"}
+                    nomePesquisa={"clientes"}
                     handleNew={handleNew}
                 />
 

@@ -112,7 +112,7 @@ export default function Produtos() {
 			<div className="app-container">
 				<Header
 					nomeBotao={"Novo Produto"}
-					nomePesquisa={"Produtos"}
+					nomePesquisa={"produtos"}
 					handleNew={handleNew}
 				/>
 
