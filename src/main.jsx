@@ -1,12 +1,13 @@
-import { StrictMode, useEffect, useState } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, Navigate, RouterProvider, useNavigate, Outlet, useLocation } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { getTesteLogin, logout } from "./requests.js";
+import { Redirec, Auth, Logout } from "./components/Tools.jsx";
+
+import Sidebar from "./components/Sidebar.jsx";
 
 import Login from "./pages/Signin.jsx";
 import SignUp_Up from "./pages/Signup.jsx";
-import Home from "./pages/Home.jsx";
 import Clientes from "./pages/Clientes.jsx";
 import Fornecedores from "./pages/Fornecedores.jsx";
 import Marca from "./pages/Marca.jsx";
@@ -18,104 +19,6 @@ import Usuarios from "./pages/Usuarios.jsx";
 import Vendedores from "./pages/Vendedores.jsx";
 
 import "./styles.css"
-
-function Auth({ children }) {
-    const navigate = useNavigate();
-    const [auth, setAuth] = useState(false);
-
-    useEffect(() => {
-        if (!localStorage.getItem("token")) {
-            navigate("/login");
-        }
-        getTesteLogin().then((value) => {
-            setAuth(value);
-            if (!value) {
-                logout()
-                navigate("/login");
-            }
-        })
-    }, []);
-
-    // useEffect(() => {
-    //     if (!auth) navigate("/login");
-    // }, [auth]);
-
-    if (auth) return children;
-    return <></>;
-}
-
-function Logout() {
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        logout();
-        navigate("/login");
-    }, []);
-    return <></>;
-}
-
-function Redirec() {
-    return <Navigate to="/" />;
-}
-
-function SideBar() {
-    const navigate = useNavigate();
-    const location = useLocation();    
-    const isCurrentPath = (path) => {
-        if (location.pathname == path) return true;
-        return false;
-    }
-
-    return (
-        <>
-            <nav>
-            <div className="sidebar">
-                <div className="sidebar-header">ERP web</div>    
-                <ul className="sidebar-menu">
-                    <li onClick={() => navigate("/")} className={isCurrentPath("/") ? "active" : ""}>
-                        Home
-                    </li>
-
-                    <li onClick={() => navigate("/usuarios")} className={isCurrentPath("/usuarios") ? "active" : ""}> 
-                        Usuarios
-                    </li>
-
-                    <li onClick={() => navigate("/marca")} className={isCurrentPath("/marca") ? "active" : ""}>
-                        Marca
-                    </li>
-
-                    <li onClick={() => navigate("/fornecedores")} className={isCurrentPath("/fornecedores") ? "active" : ""}>
-                        Fornecedores
-                    </li>
-
-                    <li onClick={() => navigate("/produtos")} className={isCurrentPath("/produtos") ? "active" : ""}>
-                        Produtos
-                    </li>
-                    
-                    <li onClick={() => navigate("/clientes")} className={isCurrentPath("/clientes") ? "active" : ""}>
-                        Clientes
-                    </li>
-
-                    <li onClick={() => navigate("/vendedores")} className={isCurrentPath("/vendedores") ? "active" : ""}> 
-                        Vendedores
-                    </li>
-
-                    <li onClick={() => navigate("/pedidos/saida")} className={isCurrentPath("/pedidos/saida") ? "active" : ""}>
-                        Pedidos de Saída
-                    </li>
-                    
-                    <li onClick={() => navigate("/pedidos/entrada")} className={isCurrentPath("/pedidos/entrada") ? "active" : ""}>
-                        Pedidos de Entrada
-                    </li>
-                    
-                    <li onClick={() => navigate("/logout")}>Sair</li>
-                </ul>
-            </div>
-            </nav>
-            <Outlet />
-        </>
-    );
-}
 
 const router = createBrowserRouter([
     {
@@ -136,11 +39,11 @@ const router = createBrowserRouter([
     },
     {
         //path: "/",
-        element: <Auth> <SideBar /> </Auth>,
+        element: <Auth> <Sidebar /> </Auth>,
         children: [
             {
                 path: "/",
-                element: <Home />,
+                element: <Usuarios />,
             },
             {
                 path: "/clientes",

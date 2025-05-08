@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
-import * as XLSX from 'xlsx';
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
 import { postUsuario, patchUsuario, getUsuarioLista, deleteUsuario } from '../requests';
+import { Usuario, UsuarioCargo} from '../utils';
 import Header from '../components/Header';
 import Filters from '../components/Filters';
 import Cards from '../components/Cards';
 import Table from '../components/Table';
-import { Usuario, UsuarioCargo, Marca } from '../utils';
 
 export default function Usuarios() {
     const [page, setPage] = useState(0);
@@ -116,74 +113,6 @@ export default function Usuarios() {
 
     const filteredUsers = applyFilters();
 
-    function exportToCSV() {
-        const headers = ['Nome', 'Email', 'Cargo'];
-        const data = filteredUsers.map(user => [
-            user.username,
-            user.email,
-            user.cargo
-        ]);
-
-        const csvContent = [headers.join(','), ...data.map(row => row.join(','))].join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'usuarios.csv');
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    function exportToExcel() {
-        const worksheetData = [
-            ['Nome', 'Email', 'Cargo'],
-            ...filteredUsers.map(u => [
-                u.name,
-                u.email,
-                u.cargo
-            ])
-        ];
-        const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Usuários');
-        XLSX.writeFile(workbook, 'usuarios.xlsx');
-    };
-
-    function exportToPDF() {
-        try {
-            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm' });
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(16);
-            doc.text('Relatório de Usuários', 105, 15, { align: 'center' });
-
-            const safeUsers = filteredUsers.map(u => ({
-                username: String(u.username || '-'),
-                email: String(u.email || '-'),
-                cargo: String(u.cargo || '-')
-            }));
-
-            doc.autoTable({
-                head: [['Nome', 'Email', 'Cargo']],
-                body: safeUsers.map(u => [u.username, u.email, u.cargo]),
-                startY: 25,
-                margin: { left: 10, right: 10 },
-                styles: {
-                    fontSize: 9,
-                    cellPadding: 3,
-                    overflow: 'linebreak'
-                }
-            });
-
-            const fileName = `usuarios_${new Date().toISOString().slice(0, 10)}.pdf`;
-            doc.save(fileName);
-        } catch (error) {
-            console.error('Erro ao gerar PDF:', error);
-            alert(`Falha na exportação para PDF:\n${error.message}`);
-        }
-    };
-
     const totalUsers = users.length;
     const uniqueCargos = ['Todos Cargos', ...new Set(users.map(u => u.cargo))];
 
@@ -212,10 +141,6 @@ export default function Usuarios() {
                         handleDelete={handleDelete}
                         handleEdit={handleEdit}
                         handleUpdate={handleUpdate}
-                        exportToCSV={exportToCSV}
-                        exportToExcel={exportToExcel}
-                        exportToPDF={exportToPDF}
-
                     />
                 </main>
             </div>

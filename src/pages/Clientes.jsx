@@ -1,8 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
-import { } from "react";
-import * as XLSX from 'xlsx';
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
+import { useState, useEffect } from 'react';
 
 import {
     getClienteLista,
@@ -93,91 +89,6 @@ export default function Clientes() {
         setFilters(prev => ({ ...prev, [name]: value }));
     };
 
-    function exportToCSV() {
-        const headers = ['Nome', 'Tipo', 'Documento', 'Telefone', 'Email', 'CEP', 'Endereço', 'Status'];
-        const data = filteredClientes.map(cliente => [
-            cliente.nome,
-            cliente.tipo === 'pessoaFisica' ? 'Pessoa Física' : 'Pessoa Jurídica',
-            cliente.documento,
-            cliente.telefone,
-            cliente.email,
-            cliente.endereco.cep,
-            `${cliente.endereco.rua}, ${cliente.endereco.numero} - ${cliente.endereco.bairro}, ${cliente.endereco.cidade}/${cliente.endereco.estado}`,
-            cliente.status === 'active' ? 'Ativo' : 'Inativo'
-        ]);
-
-        const csvContent = [headers.join(','), ...data.map(row => row.join(','))].join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'clientes.csv');
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    function exportToExcel() {
-        const worksheetData = [
-            ['Nome', 'Tipo', 'Documento', 'Telefone', 'Email', 'CEP', 'Endereço', 'Status'],
-            ...filteredClientes.map(c => [
-                c.nome,
-                c.tipo === 'pessoaFisica' ? 'Pessoa Física' : 'Pessoa Jurídica',
-                c.documento,
-                c.telefone,
-                c.email,
-                c.endereco.cep,
-                `${c.endereco.rua}, ${c.endereco.numero} - ${c.endereco.bairro}, ${c.endereco.cidade}/${c.endereco.estado}`,
-                c.status === 'active' ? 'Ativo' : 'Inativo'
-            ])
-        ];
-        const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Clientes');
-        XLSX.writeFile(workbook, 'clientes.xlsx');
-    };
-
-    function exportToPDF() {
-        try {
-            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm' });
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(16);
-            doc.text('Relatório de Clientes', 105, 15, { align: 'center' });
-
-            const safeClientes = filteredClientes.map(c => ({
-                nome: String(c.nome || '-'),
-                tipo: c.tipo === 'pessoaFisica' ? 'Pessoa Física' : 'Pessoa Jurídica',
-                documento: String(c.documento || '-'),
-                telefone: String(c.telefone || '-'),
-                email: String(c.email || '-'),
-                endereco: `${c.endereco.rua || ''}, ${c.endereco.numero || ''} - ${c.endereco.bairro || ''}, ${c.endereco.cidade || ''}/${c.endereco.estado || ''}`,
-                status: c.status === 'active' ? 'Ativo' : 'Inativo'
-            }));
-
-            doc.autoTable({
-                head: [['Nome', 'Tipo', 'Documento', 'Telefone', 'Email', 'Endereço', 'Status']],
-                body: safeClientes.map(c => [c.nome, c.tipo, c.documento, c.telefone, c.email, c.endereco, c.status]),
-                startY: 25,
-                margin: { left: 10, right: 10 },
-                styles: {
-                    fontSize: 9,
-                    cellPadding: 3,
-                    overflow: 'linebreak'
-                },
-                columnStyles: {
-                    5: { cellWidth: 'auto' }
-                }
-            });
-
-            const fileName = `clientes_${new Date().toISOString().slice(0, 10)}.pdf`;
-            doc.save(fileName);
-        } catch (error) {
-            console.error('Erro ao gerar PDF:', error);
-            alert(`Falha na exportação para PDF:\n${error.message}`);
-        }
-    };
-
     return (
         <div className="layout">
             <div className="app-container">
@@ -198,7 +109,7 @@ export default function Clientes() {
                         ]}
                     />
                     <Table
-                        nome={"Cliente"}
+                        nome={"Clientes"}
                         items={items}
                         colunas={[
                             { label: "Codigo", value: "id" },
@@ -214,9 +125,6 @@ export default function Clientes() {
                         handleEdit={handleEdit}
                         handleDelete={handleDelete}
                         handleUpdate={handleUpdate}
-                        exportToCSV={exportToCSV}
-                        exportToExcel={exportToExcel}
-                        exportToPDF={exportToPDF}
                     />
                 </main>
             </div>

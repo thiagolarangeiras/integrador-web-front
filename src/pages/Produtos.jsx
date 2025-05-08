@@ -3,7 +3,7 @@ import { getProdutoLista, postProduto, patchProduto, deleteProduto, getMarcaList
 import { Produto } from "../utils";
 import Header from "../components/Header";
 import Cards from "../components/Cards";
-import Table from "../components/Table";
+import Table, { TableSearch } from "../components/Table";
 import Filters from "../components/Filters";
 
 export default function Produtos() {
@@ -12,17 +12,6 @@ export default function Produtos() {
 	const [editId, setEditId] = useState(null);
 	const [items, setItems] = useState([{ ...Produto, id: 0 }]);
 	const [newItem, setNewItem] = useState(Produto);
-
-	const tableColums = [
-		{ label: "Codigo", value: "id" },
-		{ label: "Nome", value: "nome" },
-		{ label: "Descrição", value: "descricao" },
-		{ label: "Marca", value: "marca.nome" },
-		{ label: "Fornecedor", value: "fornecedor.nome" },
-		{ label: "V. Compra", value: "valorCompra" },
-		{ label: "V. Venda", value: "valorVenda" },
-		{ label: "Estoque", value: "qtEstoque" },
-	];
 
 	useEffect(() => {
 		handleUpdate();
@@ -35,7 +24,6 @@ export default function Produtos() {
 
 	function handleUpdate() {
 		getProdutoLista(page).then((value) => {
-			console.log(value[0]["marca"])
 			if (value != null) {
 				setItems(value);
 			}
@@ -72,10 +60,6 @@ export default function Produtos() {
 		});
 	};
 
-	function exportToCSV() { };
-	function exportToExcel() { };
-	function exportToPDF() { };
-
 	return (
 		<div className="layout">
 			<div className="app-container">
@@ -89,20 +73,26 @@ export default function Produtos() {
 					<Filters uniqueCategories={[0]} />
 					<Cards
 						items={[
-							{value: 0, label: "Total de Produtos"},
-							{value: 0, label: "Produtos com baixo estoque"},	
+							{ value: 0, label: "Total de Produtos" },
+							{ value: 0, label: "Produtos com baixo estoque" },
 						]}
 					/>
 					<Table
 						nome={"Produtos"}
 						items={items}
-						colunas={tableColums}
+						colunas={[
+							{ label: "Codigo", value: "id" },
+							{ label: "Nome", value: "nome" },
+							{ label: "Descrição", value: "descricao" },
+							{ label: "Marca", value: "marca.nome" },
+							{ label: "Fornecedor", value: "fornecedor.nome" },
+							{ label: "V. Compra", value: "valorCompra" },
+							{ label: "V. Venda", value: "valorVenda" },
+							{ label: "Estoque", value: "qtEstoque" },
+						]}
 						handleEdit={handleEdit}
 						handleDelete={handleDelete}
 						handleUpdate={handleUpdate}
-						exportToCSV={exportToCSV}
-						exportToExcel={exportToExcel}
-						exportToPDF={exportToPDF}
 					/>
 				</main>
 			</div>
@@ -120,14 +110,14 @@ export default function Produtos() {
 	);
 }
 
-function Modal({ editId, newItem, setNewItem, handleSubmit, handleModalClose, handleInputChange}) {
+function Modal({ editId, newItem, setNewItem, handleSubmit, handleModalClose, handleInputChange }) {
 	const [marca, setMarca] = useState("");
 	const [fornecedor, setFornecedor] = useState("");
 	const [showMarcaModal, setShowMarcaModal] = useState(false);
 	const [showFornecedorModal, setShowFornecedorModal] = useState(false);
-	
-	useEffect(()=>{
-		if (editId){
+
+	useEffect(() => {
+		if (editId) {
 			setMarca(newItem.marca.nome);
 			setFornecedor(newItem.fornecedor.nome);
 		}
@@ -268,38 +258,13 @@ function ModalSearchMarca({ handleModalClose, setNewItem, setMarca }) {
 							<button type="button" className="btn secondary" onClick={handleUpdateName}>🔍</button>
 						</div>
 					</div>
-					<TableSearchMarca items={items} handleSelect={handleSelect} />
+					<TableSearch items={items} handleSelect={handleSelect} />
 					<div className="modal-actions">
 						<button type="button" className="btn secondary" onClick={handleModalClose}>Cancelar</button>
 					</div>
 				</form>
 			</div>
 		</div>
-	);
-}
-
-function TableSearchMarca({ items, handleSelect }) {
-	return (
-		<table className="product-table">
-			<thead>
-				<tr>
-					<th>Codigo</th>
-					<th>Nome</th>
-					<th>AÇÕES</th>
-				</tr>
-			</thead>
-			<tbody>
-				{items.map(item => (
-					<tr key={item.id}>
-						<td>{item.id}</td>
-						<td>{item.nome}</td>
-						<td className="action-buttons">
-							<button className="btn action-btn edit-btn" onClick={() => handleSelect(item)}>✅</button>
-						</td>
-					</tr>
-				))}
-			</tbody>
-		</table>
 	);
 }
 
@@ -353,37 +318,12 @@ function ModalSearchFornecedor({ handleModalClose, setNewItem, setFornecedor }) 
 							<button type="button" className="btn secondary" onClick={handleUpdateName}>🔍</button>
 						</div>
 					</div>
-					<TableSearchFornecedor items={items} handleSelect={handleSelect} />
+					<TableSearch items={items} handleSelect={handleSelect} />
 					<div className="modal-actions">
 						<button type="button" className="btn secondary" onClick={handleModalClose}>Cancelar</button>
 					</div>
 				</form>
 			</div>
 		</div>
-	);
-}
-
-function TableSearchFornecedor({ items, handleSelect }) {
-	return (
-		<table className="product-table">
-			<thead>
-				<tr>
-					<th>Codigo</th>
-					<th>Nome</th>
-					<th>AÇÕES</th>
-				</tr>
-			</thead>
-			<tbody>
-				{items.map(item => (
-					<tr key={item.id}>
-						<td>{item.id}</td>
-						<td>{item.nome}</td>
-						<td className="action-buttons">
-							<button className="btn action-btn edit-btn" onClick={() => handleSelect(item)}>✅</button>
-						</td>
-					</tr>
-				))}
-			</tbody>
-		</table>
 	);
 }

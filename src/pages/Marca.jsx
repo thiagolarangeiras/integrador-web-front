@@ -1,38 +1,22 @@
 import { useEffect, useState } from "react";
 import { getMarcaLista, postMarca, patchMarca, deleteMarca } from "../requests";
+import { Marca } from "../utils";
 import Header from "../components/Header";
 import Cards from "../components/Cards";
 import Filters from "../components/Filters";
 import Table from "../components/Table";
 
-const defaultItem = {
-    nome: null,
-} 
 
-export default function Marca() {
+export default function Marcas() {
 	const [page, setPage] = useState(0);
 	const [showAddModal, setShowAddModal] = useState(false);
 	const [editId, setEditId] = useState(null);
-	const [marca, setMarca] = useState([
-		{
-			id: 1,
-			nome: 'MARCA EXEMPLO',
-		}
-	]);
-	const [newMarca, setNewMarca] = useState(defaultItem);
-
-	const tableColums = [
-		{label: "Codigo", value: "id" },
-		{label: "Nome", value: "nome" },
-	];
+	const [marca, setMarca] = useState([]);
+	const [newMarca, setNewMarca] = useState(Marca);
 
 	useEffect(() => {
 		handleUpdate();
 	}, [page]);
-
-	function exportToCSV() { };
-	function exportToExcel() { };
-	function exportToPDF() { };
 
 	function handleInputChange(e) {
 		const { name, value } = e.target;
@@ -102,10 +86,10 @@ export default function Marca() {
 					{/* Cartões */}
 					<Cards
 						items={[
-							{value: 0, label: "CARD"},
-							{value: 0, label: "CARD"},
-							{value: 0, label: "CARD"},
-							{value: 0, label: "CARD"},	
+							{ value: 0, label: "CARD" },
+							{ value: 0, label: "CARD" },
+							{ value: 0, label: "CARD" },
+							{ value: 0, label: "CARD" },
 						]}
 					/>
 
@@ -113,13 +97,13 @@ export default function Marca() {
 					<Table
 						nome={"Marcas"}
 						items={marca}
-						colunas={tableColums}
+						colunas={[
+							{ label: "Codigo", value: "id" },
+							{ label: "Nome", value: "nome" },
+						]}
 						handleEdit={handleEdit}
 						handleDelete={handleDelete}
 						handleUpdate={handleUpdate}
-						exportToCSV={exportToCSV}
-						exportToExcel={exportToExcel}
-						exportToPDF={exportToPDF}
 					/>
 				</main>
 			</div>

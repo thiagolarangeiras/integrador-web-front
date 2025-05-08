@@ -1,12 +1,3 @@
-// { label: "Codigo", value: "id" },
-// { label: "Vendedor", value: "vendedor.nome" },
-// { label: "Nome", value: "nomePessoa" },
-// //{ label: "Empresa", value: "nomeEmpresa" },
-// //{ label: "Fantasia/Apelido", value: "nomeFantasia" },
-// { label: "Descricao", value: "descricao" },
-// { label: "Tipo", value: "tipo" },
-// { label: "Documento", value: "cpfCnpj" },
-// { label: "Telefone", value: "telefone" },
 import * as XLSX from 'xlsx';
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -32,14 +23,14 @@ function exportToCSV(nome, colunas, items) {
 	const url = URL.createObjectURL(blob);
 	const link = document.createElement('a');
 	link.setAttribute('href', url);
-	link.setAttribute('download', 'clientes.csv');
+	link.setAttribute('download', `${nome}.csv`);
 	link.style.visibility = 'hidden';
 	document.body.appendChild(link);
 	link.click();
 	document.body.removeChild(link);
 };
 
-function exportToExcel(colunas, items) {
+function exportToExcel(nome, colunas, items) {
 	const headers = colunas.map(coluna => coluna.label)
 	const data = items.map(item => 
 		colunas.map(coluna => {
@@ -60,11 +51,11 @@ function exportToExcel(colunas, items) {
 	];
 	const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
 	const workbook = XLSX.utils.book_new();
-	XLSX.utils.book_append_sheet(workbook, worksheet, 'Clientes');
-	XLSX.writeFile(workbook, 'clientes.xlsx');
+	XLSX.utils.book_append_sheet(workbook, worksheet, nome);
+	XLSX.writeFile(workbook, `${nome}.xlsx`);
 };
 
-function exportToPDF(colunas, items) {
+function exportToPDF(nome, colunas, items) {
 	const headers = colunas.map(coluna => coluna.label)
 	const data = items.map(item => 
 		colunas.map(coluna => {
@@ -83,7 +74,7 @@ function exportToPDF(colunas, items) {
 		const doc = new jsPDF({ orientation: 'portrait', unit: 'mm' });
 		doc.setFont('helvetica', 'bold');
 		doc.setFontSize(16);
-		doc.text('Relatório de Clientes', 105, 15, { align: 'center' });
+		doc.text(`Relatório de ${nome}`, 105, 15, { align: 'center' });
 
 		// const safeClientes = filteredClientes.map(c => ({
 		// 	nome: String(c.nome || '-'),
@@ -110,7 +101,7 @@ function exportToPDF(colunas, items) {
 			}
 		});
 
-		const fileName = `clientes_${new Date().toISOString().slice(0, 10)}.pdf`;
+		const fileName = `${nome}${new Date().toISOString().slice(0, 10)}.pdf`;
 		doc.save(fileName);
 	} catch (error) {
 		console.error('Erro ao gerar PDF:', error);
@@ -125,9 +116,9 @@ export default function Table({ nome, colunas, items, handleEdit, handleDelete, 
 			<div className="table-header">
 				<h2>Lista de {nome}</h2>
 				<div className="table-actions">
-					<button className="btn export-btn" onClick={()=> exportToCSV(colunas, items)}>📄 Exportar CSV</button>
-					<button className="btn export-btn" onClick={()=> exportToExcel(colunas, items)}>📊 Exportar Excel</button>
-					<button className="btn export-btn" onClick={()=> exportToPDF(colunas, items)}>📑 Exportar PDF</button>
+					<button className="btn export-btn" onClick={()=> exportToCSV(nome, colunas, items)}>📄 Exportar CSV</button>
+					<button className="btn export-btn" onClick={()=> exportToExcel(nome, colunas, items)}>📊 Exportar Excel</button>
+					<button className="btn export-btn" onClick={()=> exportToPDF(nome, colunas, items)}>📑 Exportar PDF</button>
 					<button className="btn refresh-btn" onClick={handleUpdate}>🔄 Atualizar</button>
 				</div>
 			</div>

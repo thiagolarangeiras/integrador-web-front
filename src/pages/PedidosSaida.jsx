@@ -3,49 +3,13 @@ import { getProdutoLista, deleteProduto } from "../requests";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Cards from "../components/Cards";
-import Table, { TableSearch } from "../components/Table";
 import Filters from "../components/Filters";
-
-const defaultCliente = {
-	id: null,
-	nome: null,
-}
-
-const defaultVendedor = {
-	id: null,
-	nome: null,
-}
-
-const defaultPedidoSaida = {
-	idCliente: null,
-	idVendedor: null,
-	dataCriacao: null,
-	dataVigencia: null,
-	dataEntregaPrevista: null,
-	dataEntregaReal: null,
-	status: null,
-	statusEntrega: null,
-	statusPagamento: null,
-	valorTotal: null,
-	valorFrete: null
-}
+import Table from "../components/Table";
 
 export default function PedidosSaida() {
 	const navigate = useNavigate();
 	const [page, setPage] = useState(0);
-	const [showAddModal, setShowAddModal] = useState(false);
 	const [items, setItems] = useState([]);
-
-	const tableColums = [
-		{ label: "Codigo", value: "id" },
-		{ label: "Nome", value: "nome" },
-		{ label: "Descrição", value: "descricao" },
-		{ label: "Marca", value: "marca.nome" },
-		{ label: "Fornecedor", value: "fornecedor.nome" },
-		{ label: "V. Compra", value: "valorCompra" },
-		{ label: "V. Venda", value: "valorVenda" },
-		{ label: "Estoque", value: "qtEstoque" },
-	];
 
 	useEffect(() => {
 		handleUpdate();
@@ -89,13 +53,19 @@ export default function PedidosSaida() {
 					<Table
 						nome={"Produtos"}
 						items={items}
-						colunas={tableColums}
+						colunas={[
+							{ label: "Codigo", value: "id" },
+							{ label: "Nome", value: "nome" },
+							{ label: "Descrição", value: "descricao" },
+							{ label: "Marca", value: "marca.nome" },
+							{ label: "Fornecedor", value: "fornecedor.nome" },
+							{ label: "V. Compra", value: "valorCompra" },
+							{ label: "V. Venda", value: "valorVenda" },
+							{ label: "Estoque", value: "qtEstoque" },
+						]}
 						handleEdit={handleEdit}
 						handleDelete={handleDelete}
 						handleUpdate={handleUpdate}
-						exportToCSV={()=>{}}
-						exportToExcel={()=>{}}
-						exportToPDF={()=>{}}
 					/>
 				</main>
 			</div>
