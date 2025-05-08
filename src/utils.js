@@ -130,7 +130,68 @@ export const EstadosBr = [
     "TO",
 ]
 
+export async function handleInputChange(e, setItem) {
+    const { name, value } = e.target;
+    setItem(prev => ({ ...prev, [name]: value }));
+};
 
+export function aplicarMascaraTelefone(e, setItem) {
+    const name = e.target.name;
+    const value = e.target.value.replace(/\D/g, '');
+    let formattedValue = value;
+
+    if (value.length > 10) {
+        formattedValue = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+    } else if (value.length > 6) {
+        formattedValue = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+    } else if (value.length > 2) {
+        formattedValue = value.replace(/^(\d{2})(\d{0,5}).*/, '($1) $2');
+    } else if (value.length > 0) {
+        formattedValue = value.replace(/^(\d{0,2}).*/, '($1');
+    }
+
+    setItem(prev => ({
+        ...prev,
+        [name]: formattedValue
+    }));
+};
+
+export function aplicarMascaraDocumento(e, setItem, tipo) {
+    const name = e.target.name;
+    const value = e.target.value.replace(/\D/g, '');
+    let formattedValue = value;
+
+    if (tipo === "pessoaFisica") {
+        if (value.length <= 11) {
+            formattedValue = value.replace(/(\d{3})(\d)/, '$1.$2');
+            formattedValue = formattedValue.replace(/(\d{3})(\d)/, '$1.$2');
+            formattedValue = formattedValue.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        }
+    } else {
+        if (value.length <= 14) {
+            formattedValue = value.replace(/^(\d{2})(\d)/, '$1.$2');
+            formattedValue = formattedValue.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+            formattedValue = formattedValue.replace(/\.(\d{3})(\d)/, '.$1/$2');
+            formattedValue = formattedValue.replace(/(\d{4})(\d)/, '$1-$2');
+        }
+    }
+    setItem(prev => ({
+        ...prev,
+        [name]: formattedValue
+    }));
+};
+
+
+export function aplicarMascaraCEP(e, setItem) {
+    const name = e.target.name;
+    const value = e.target.value.replace(/\D/g, '');
+    const formattedValue = value.replace(/^(\d{5})(\d)/, '$1-$2');
+
+    setItem(prev => ({
+        ...prev,
+        [name]: formattedValue
+    }));
+};
 
 
 

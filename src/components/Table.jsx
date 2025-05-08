@@ -1,12 +1,133 @@
-export default function Table({ nome, colunas, items, handleEdit, handleDelete, handleUpdate, exportToCSV, exportToExcel, exportToPDF }) {
+// { label: "Codigo", value: "id" },
+// { label: "Vendedor", value: "vendedor.nome" },
+// { label: "Nome", value: "nomePessoa" },
+// //{ label: "Empresa", value: "nomeEmpresa" },
+// //{ label: "Fantasia/Apelido", value: "nomeFantasia" },
+// { label: "Descricao", value: "descricao" },
+// { label: "Tipo", value: "tipo" },
+// { label: "Documento", value: "cpfCnpj" },
+// { label: "Telefone", value: "telefone" },
+import * as XLSX from 'xlsx';
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
+
+function exportToCSV(nome, colunas, items) {
+	const headers = colunas.map(coluna => coluna.label)
+	const data = items.map(item => 
+		colunas.map(coluna => {
+			let keys = coluna.value.split(".")
+			if (keys.length > 1) {
+				let result = item;
+				for (const key of keys) {
+					result = result[key];
+				}
+				return result;
+			}
+			return item[coluna.value];
+		})
+	);
+	
+	const csvContent = [headers.join(','), ...data.map(row => row.join(','))].join('\n');
+	const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+	const url = URL.createObjectURL(blob);
+	const link = document.createElement('a');
+	link.setAttribute('href', url);
+	link.setAttribute('download', 'clientes.csv');
+	link.style.visibility = 'hidden';
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+};
+
+function exportToExcel(colunas, items) {
+	const headers = colunas.map(coluna => coluna.label)
+	const data = items.map(item => 
+		colunas.map(coluna => {
+			let keys = coluna.value.split(".")
+			if (keys.length > 1) {
+				let result = item;
+				for (const key of keys) {
+					result = result[key];
+				}
+				return result;
+			}
+			return item[coluna.value];
+		})
+	);
+	const worksheetData = [
+		headers,
+		...data
+	];
+	const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+	const workbook = XLSX.utils.book_new();
+	XLSX.utils.book_append_sheet(workbook, worksheet, 'Clientes');
+	XLSX.writeFile(workbook, 'clientes.xlsx');
+};
+
+function exportToPDF(colunas, items) {
+	const headers = colunas.map(coluna => coluna.label)
+	const data = items.map(item => 
+		colunas.map(coluna => {
+			let keys = coluna.value.split(".")
+			if (keys.length > 1) {
+				let result = item;
+				for (const key of keys) {
+					result = result[key];
+				}
+				return result;
+			}
+			return item[coluna.value];
+		})
+	);
+	try {
+		const doc = new jsPDF({ orientation: 'portrait', unit: 'mm' });
+		doc.setFont('helvetica', 'bold');
+		doc.setFontSize(16);
+		doc.text('Relatório de Clientes', 105, 15, { align: 'center' });
+
+		// const safeClientes = filteredClientes.map(c => ({
+		// 	nome: String(c.nome || '-'),
+		// 	tipo: c.tipo === 'pessoaFisica' ? 'Pessoa Física' : 'Pessoa Jurídica',
+		// 	documento: String(c.documento || '-'),
+		// 	telefone: String(c.telefone || '-'),
+		// 	email: String(c.email || '-'),
+		// 	endereco: `${c.endereco.rua || ''}, ${c.endereco.numero || ''} - ${c.endereco.bairro || ''}, ${c.endereco.cidade || ''}/${c.endereco.estado || ''}`,
+		// 	status: c.status === 'active' ? 'Ativo' : 'Inativo'
+		// }));
+		
+		doc.autoTable({
+			head: [headers],
+			body: data,
+			startY: 25,
+			margin: { left: 10, right: 10 },
+			styles: {
+				fontSize: 9,
+				cellPadding: 3,
+				overflow: 'linebreak'
+			},
+			columnStyles: {
+				5: { cellWidth: 'auto' }
+			}
+		});
+
+		const fileName = `clientes_${new Date().toISOString().slice(0, 10)}.pdf`;
+		doc.save(fileName);
+	} catch (error) {
+		console.error('Erro ao gerar PDF:', error);
+		alert(`Falha na exportação para PDF:\n${error.message}`);
+	}
+};
+
+
+export default function Table({ nome, colunas, items, handleEdit, handleDelete, handleUpdate}) {
 	return (
 		<div className="product-table-container">
 			<div className="table-header">
 				<h2>Lista de {nome}</h2>
 				<div className="table-actions">
-					<button className="btn export-btn" onClick={exportToCSV}>📄 Exportar CSV</button>
-					<button className="btn export-btn" onClick={exportToExcel}>📊 Exportar Excel</button>
-					<button className="btn export-btn" onClick={exportToPDF}>📑 Exportar PDF</button>
+					<button className="btn export-btn" onClick={()=> exportToCSV(colunas, items)}>📄 Exportar CSV</button>
+					<button className="btn export-btn" onClick={()=> exportToExcel(colunas, items)}>📊 Exportar Excel</button>
+					<button className="btn export-btn" onClick={()=> exportToPDF(colunas, items)}>📑 Exportar PDF</button>
 					<button className="btn refresh-btn" onClick={handleUpdate}>🔄 Atualizar</button>
 				</div>
 			</div>
@@ -26,15 +147,15 @@ export default function Table({ nome, colunas, items, handleEdit, handleDelete, 
 						<tr key={item.id}>
 							{colunas.map(coluna => {
 								let keys = coluna.value.split(".")
-								if(keys.length > 1){
+								if (keys.length > 1) {
 									let result = item;
-									for (const key of keys){
+									for (const key of keys) {
 										result = result[key];
 									}
 									return (<td>{result}</td>)
 								}
 								return (<td>{item[coluna.value]}</td>)
-								
+
 							})}
 							{/* <td>{item.id}</td>
 							<td className="product-cell">
