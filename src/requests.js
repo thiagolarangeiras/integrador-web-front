@@ -467,8 +467,8 @@ export async function deleteCliente(id) {
     const token = localStorage.getItem("token");
     let init = getInit("DELETE", token);
     const response = await fetch(`${url}/cliente/${id}`, init);
-    if (response.status != 200) return null;
-    return await response.json();
+    if (response.status != 200) return false;
+    return true;
 }
 
 //Vendedores
@@ -483,7 +483,7 @@ export async function getVendedorLista(page, count=50) {
 export async function getVendedorListaNome(name, page, count=50) {
     const token = localStorage.getItem("token");
     let init = getInit("GET", token);
-    const response = await fetch(`${url}/vendedor?page=${page}&count=${count}&name=${name}`, init);
+    const response = await fetch(`${url}/vendedor?page=${page}&count=${count}&nome=${name}`, init);
     if (response.status != 200) return null;
     return await response.json();
 }

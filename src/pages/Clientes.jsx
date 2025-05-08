@@ -10,6 +10,7 @@ import {
     patchCliente,
     deleteCliente,
     getVendedorListaNome,
+    getVendedorLista,
 } from "../requests";
 
 import { Cliente, EstadosBr } from '../utils';
@@ -47,10 +48,9 @@ export default function Clientes() {
         setModal(true);
     }
 
-    function handleDelete(id) {
-        deleteCliente(id).then(() => {
-            handleUpdate();
-        });
+    async function handleDelete(id) {
+        await deleteCliente(id);
+        handleUpdate();
     };
 
     function applyFilters() {
@@ -202,10 +202,10 @@ export default function Clientes() {
                         items={items}
                         colunas={[
                             { label: "Codigo", value: "id" },
-                            { label: "Vendedor", value: "idVendedor" },
+                            { label: "Vendedor", value: "vendedor.nome" },
                             { label: "Nome", value: "nomePessoa" },
-                            { label: "Empresa", value: "nomeEmpresa" },
-                            { label: "Fantasia/Apelido", value: "nomeFantasia" },
+                            //{ label: "Empresa", value: "nomeEmpresa" },
+                            //{ label: "Fantasia/Apelido", value: "nomeFantasia" },
                             { label: "Descricao", value: "descricao" },
                             { label: "Tipo", value: "tipo" },
                             { label: "Documento", value: "cpfCnpj" },
@@ -222,7 +222,11 @@ export default function Clientes() {
             </div>
             {modal && (
                 <Modal
-                    handleModalClose={handleModalClose}
+                    handleModalClose={() => {
+                        setModalItem(Cliente);
+                        handleUpdate();
+                        setModal(false);
+                    }}
                     item={modalItem}
                     setItem={setModalItem}
                 />
@@ -233,41 +237,33 @@ export default function Clientes() {
 
 function Modal({ handleModalClose, item, setItem }) {
     const [vendedor, setVendedor] = useState("");
-    const [showVendedorModal, setShowVendedorModal] = useState(false);
+    const [vendedorModal, setVendedorModal] = useState(false);
 
     useEffect(() => {
-        if (newItem.id) {
-            setVendedor(newItem.vendedor.nome);
+        if (item.id) {
+            setVendedor(item.vendedor.nome);
         }
     }, [])
-    
+
     async function handleSubmit(e) {
         e.preventDefault();
-        if (newItem.id) await patchCliente(newItem.id, newItem);
-        else await postCliente(newItem);
-        handleUpdate();
+        let input = { ...item, nomeEmpresa: item.nomePessoa, nomeFantasia: item.nomePessoa, vendedor: null }
+        if (input.id) await patchCliente(input.id, input);
+        else await postCliente(input);
         handleModalClose();
     };
 
-    function handleInputChange(e) {
+    async function handleInputChange(e) {
         const { name, value } = e.target;
-        setModalItem(prev => ({ ...prev, [name]: value }));
+        setItem(prev => ({ ...prev, [name]: value }));
     };
-
-    function handleVendedorModalOpen() {
-        setShowVendedorModal(true);
-    }
-
-    function handleVendedorModalClose() {
-        setShowVendedorModal(false);
-    }
 
     // Funções de máscara
     function aplicarMascaraDocumento(e) {
         const value = e.target.value.replace(/\D/g, '');
         let formattedValue = value;
 
-        if (newItem.tipo === "pessoaFisica") {
+        if (item.tipo === "pessoaFisica") {
             if (value.length <= 11) {
                 formattedValue = value.replace(/(\d{3})(\d)/, '$1.$2');
                 formattedValue = formattedValue.replace(/(\d{3})(\d)/, '$1.$2');
@@ -282,7 +278,7 @@ function Modal({ handleModalClose, item, setItem }) {
             }
         }
 
-        setModalItem(prev => ({
+        setItem(prev => ({
             ...prev,
             cpfCnpj: formattedValue
         }));
@@ -302,7 +298,7 @@ function Modal({ handleModalClose, item, setItem }) {
             formattedValue = value.replace(/^(\d{0,2}).*/, '($1');
         }
 
-        setNewCliente(prev => ({
+        setItem(prev => ({
             ...prev,
             telefone: formattedValue
         }));
@@ -312,12 +308,9 @@ function Modal({ handleModalClose, item, setItem }) {
         const value = e.target.value.replace(/\D/g, '');
         const formattedValue = value.replace(/^(\d{5})(\d)/, '$1-$2');
 
-        setNewCliente(prev => ({
+        setItem(prev => ({
             ...prev,
-            endereco: {
-                ...prev.endereco,
-                cep: formattedValue
-            }
+            cep: formattedValue
         }));
     };
 
@@ -326,15 +319,26 @@ function Modal({ handleModalClose, item, setItem }) {
         <>
             <div className="modal-overlay">
                 <div className="modal">
-                    <h2>{newItem.id ? 'Editar Produto' : 'Adicionar Novo Produto'}</h2>
+                    <h2>{item.id ? 'Editar Produto' : 'Adicionar Novo Produto'}</h2>
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label>nome completo/razão social</label>
                             <input
                                 type="text"
-                                name="nome"
-                                value={newItem.nome}
-                                onchange={handleInputChange}
+                                name="nomePessoa"
+                                value={item.nomePessoa}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>descrição</label>
+                            <input
+                                type="text"
+                                name="descricao"
+                                value={item.descricao}
+                                onChange={handleInputChange}
                                 required
                             />
                         </div>
@@ -344,7 +348,7 @@ function Modal({ handleModalClose, item, setItem }) {
                                 <label>Tipo</label>
                                 <select
                                     name="tipo"
-                                    value={newItem.tipo}
+                                    value={item.tipo}
                                     onChange={handleInputChange}
                                     required
                                 >
@@ -354,15 +358,15 @@ function Modal({ handleModalClose, item, setItem }) {
                             </div>
 
                             <div className="form-group">
-                                <label>{newItem.tipo === 'pessoaFisica' ? 'CPF' : 'CNPJ'}</label>
+                                <label>{item.tipo === 'pessoaFisica' ? 'CPF' : 'CNPJ'}</label>
                                 <input
                                     type="text"
                                     name="cpfCnpj"
-                                    value={newItem.cpfCnpj}
+                                    value={item.cpfCnpj}
                                     onChange={aplicarMascaraDocumento}
                                     required
-                                    placeholder={newItem.tipo === 'pessoaFisica' ? '000.000.000-00' : '00.000.000/0000-00'}
-                                    maxLength={newItem.tipo === 'pessoaFisica' ? 14 : 18}
+                                    placeholder={item.tipo === 'pessoaFisica' ? '000.000.000-00' : '00.000.000/0000-00'}
+                                    maxLength={item.tipo === 'pessoaFisica' ? 14 : 18}
                                 />
                             </div>
                         </div>
@@ -373,7 +377,7 @@ function Modal({ handleModalClose, item, setItem }) {
                                 <input
                                     type="text"
                                     name="telefone"
-                                    value={newItem.telefone}
+                                    value={item.telefone}
                                     onChange={aplicarMascaraTelefone}
                                     required
                                     placeholder="(00) 00000-0000"
@@ -386,7 +390,7 @@ function Modal({ handleModalClose, item, setItem }) {
                                 <input
                                     type="email"
                                     name="email"
-                                    value={newItem.email}
+                                    value={item.email}
                                     onChange={handleInputChange}
                                     required
                                 />
@@ -399,74 +403,18 @@ function Modal({ handleModalClose, item, setItem }) {
                                 <input
                                     type="text"
                                     name="cep"
-                                    value={newItem.cep}
+                                    value={item.cep}
                                     onChange={aplicarMascaraCEP}
                                     required
                                     placeholder="00000-000"
                                     maxLength="9"
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>Rua</label>
-                                <input
-                                    type="text"
-                                    name="rua"
-                                    value={newItem.rua}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
-
-                            <div className="form-group small">
-                                <label>Número</label>
-                                <input
-                                    type="text"
-                                    name="numero"
-                                    value={newItem.numero}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="form-group">
-                            <label>Complemento</label>
-                            <input
-                                type="text"
-                                name="complemento"
-                                value={newItem.complemento}
-                                onChange={handleInputChange}
-                            />
-                        </div>
-
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label>Bairro</label>
-                                <input
-                                    type="text"
-                                    name="bairro"
-                                    value={newItem.bairro}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Cidade</label>
-                                <input
-                                    type="text"
-                                    name="cidade"
-                                    value={newItem.cidade}
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            </div>
-
                             <div className="form-group small">
                                 <label>Estado</label>
                                 <select
                                     name="estado"
-                                    value={newItem.estado}
+                                    value={item.estado}
                                     onChange={handleInputChange}
                                     required
                                 >
@@ -475,38 +423,90 @@ function Modal({ handleModalClose, item, setItem }) {
                                             {e}
                                         </option>
                                     ))}
-                                    
+
                                 </select>
                             </div>
+                            <div className="form-group">
+                                <label>Cidade</label>
+                                <input
+                                    type="text"
+                                    name="cidade"
+                                    value={item.cidade}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Bairro</label>
+                                <input
+                                    type="text"
+                                    name="bairro"
+                                    value={item.bairro}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
                         </div>
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Rua</label>
+                                <input
+                                    type="text"
+                                    name="rua"
+                                    value={item.rua}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group small">
+                                <label>Número</label>
+                                <input
+                                    type="text"
+                                    name="numero"
+                                    value={item.numero}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Complemento</label>
+                                <input
+                                    type="text"
+                                    name="complemento"
+                                    value={item.complemento}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                        </div>
+
                         <div className="form-group">
                             <label>Vendedor</label>
                             <div class="input-group">
-                                <button onClick={handleVendedorModalOpen} type="button">🔍</button>
-                                <input type="number" name="idVendedor" value={newItem.idVendedor} onChange={handleInputChange} required />
+                                <button onClick={() => setVendedorModal(true)} type="button">🔍</button>
+                                <input type="number" name="idVendedor" value={item.idVendedor} onChange={handleInputChange} required />
                                 <div class="info-text">{vendedor}</div>
                             </div>
                         </div>
 
                         <div className="modal-actions">
                             <button type="button" className="btn secondary" onClick={handleModalClose}>Cancelar</button>
-                            <button type="submit" className="btn primary">{newItem.id ? 'Atualizar' : 'Adicionar'}</button>
+                            <button type="submit" className="btn primary">{item.id ? 'Atualizar' : 'Adicionar'}</button>
                         </div>
                     </form>
                 </div>
             </div>
-            {showVendedorModal && (
+            {vendedorModal && (
                 <ModalSearchVendedor
-                    handleModalClose={handleVendedorModalClose}
-                    setModalItem={setModalItem}
-                    setMarca={setVendedor}
+                    handleModalClose={() => setVendedorModal(false)}
+                    setItem={setItem}
+                    setVendedor={setVendedor}
                 />
             )}
         </>
     );
 }
 
-function ModalSearchVendedor({ handleModalClose, setModalItem, setVendedor }) {
+function ModalSearchVendedor({ handleModalClose, setItem, setVendedor }) {
     const [search, setSearch] = useState({ id: 0, nome: "" });
     const [items, setItems] = useState([]);
 
@@ -515,13 +515,13 @@ function ModalSearchVendedor({ handleModalClose, setModalItem, setVendedor }) {
     }, []);
 
     function handleSelect(item) {
-        setModalItem(prev => ({ ...prev, idVendedor: item.id }));
+        setItem(prev => ({ ...prev, idVendedor: item.id }));
         setVendedor(item.nome)
         handleModalClose();
     }
 
     function handleUpdate() {
-        getVendedorListaNome(0).then((value) => {
+        getVendedorLista(0).then((value) => {
             if (value != null) setItems(value);
         })
     }

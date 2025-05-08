@@ -56,7 +56,7 @@ export const Cliente = {
     nomeEmpresa:  null,
     nomeFantasia: null,
     descricao:    null,
-    tipo:         null,
+    tipo:         "pessoaFisica",
     cpfCnpj:      null,
     telefone:     null,
     email:        null,
