@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getProdutoLista, deleteProduto } from "../requests";
+import {deletePedidoSaida, getPedidoSaidaLista } from "../requests";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Cards from "../components/Cards";
@@ -15,22 +15,21 @@ export default function PedidosSaida() {
 		handleUpdate();
 	}, [page]);
 
-	function handleUpdate() {
-		getProdutoLista(page).then((value) => {
-			if (value != null) {
-				setItems(value);
-			}
-		})
+	async function handleUpdate() {
+		const value = await getPedidoSaidaLista(page);
+		if (value != null) {
+			setItems(value);
+		}
 	}
 
 	function handleEdit(item) { navigate(`/pedidos/saida/${item.id}`) };
 
 	function handleNew() { navigate('/pedidos/saida/novo') }
 
-	function handleDelete(id) {
-		deleteProduto(id).then(() => {
-			handleUpdate();
-		});
+	async function handleDelete(id) {
+		await deletePedidoSaida(id);
+		handleUpdate();
+		
 	};
 
 	return (
@@ -51,17 +50,15 @@ export default function PedidosSaida() {
 						]}
 					/>
 					<Table
-						nome={"Produtos"}
+						nome={"Pedidos Saida"}
 						items={items}
 						colunas={[
 							{ label: "Codigo", value: "id" },
-							{ label: "Nome", value: "nome" },
-							{ label: "Descrição", value: "descricao" },
-							{ label: "Marca", value: "marca.nome" },
-							{ label: "Fornecedor", value: "fornecedor.nome" },
-							{ label: "V. Compra", value: "valorCompra" },
-							{ label: "V. Venda", value: "valorVenda" },
-							{ label: "Estoque", value: "qtEstoque" },
+							{ label: "Cliente", value: "idCliente" },
+							{ label: "Vendedor", value: "idVendedor" },
+							{ label: "Status", value: "status" },
+							{ label: "Status Entraga", value: "statusEntrega" },
+							{ label: "Status Pagamento", value: "statusPagamento" },
 						]}
 						handleEdit={handleEdit}
 						handleDelete={handleDelete}

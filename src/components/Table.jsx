@@ -141,6 +141,8 @@ export default function Table({ nome, colunas, items, handleEdit, handleDelete, 
 								if (keys.length > 1) {
 									let result = item;
 									for (const key of keys) {
+										if(result == null)
+											return (<td></td>)
 										result = result[key];
 									}
 									return (<td>{result}</td>)

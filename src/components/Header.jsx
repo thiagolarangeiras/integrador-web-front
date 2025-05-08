@@ -20,3 +20,19 @@ export default function Header({ nomeBotao, nomePesquisa, handleNew }) {
 		</header>
 	);
 }
+
+export function HeaderForm({ nome }) {
+	return (
+		<header className="app-header">
+			<div className="header-content">
+				<div className="logo-container">
+					<div className="logo-icon">🛍️</div>
+					<h1>IntegroSys <span>ERP</span></h1>
+				</div>
+				<div className="logo-container">
+					<h1>{nome}</h1>
+				</div>
+			</div>
+		</header>
+	);
+}

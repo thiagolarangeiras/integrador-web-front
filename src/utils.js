@@ -40,36 +40,56 @@ export const Produto = {
 }
 
 export const Vendedor = {
-	id:        null,
-	nome:      null,
+    id: null,
+    nome: null,
     descricao: null,
-    cpf:       null,
-    telefone:  null,
-    email:     null,
+    cpf: null,
+    telefone: null,
+    email: null,
 }
 
 export const Cliente = {
 	id: null,
-    idVendedor:   null,
+    idVendedor: null,
 
-    nomePessoa:   null,
-    nomeEmpresa:  null,
+    nomePessoa: null,
+    nomeEmpresa: null,
     nomeFantasia: null,
-    descricao:    null,
-    tipo:         "pessoaFisica",
-    cpfCnpj:      null,
-    telefone:     null,
-    email:        null,
-    cep:          null,
-    rua:          null,
-    numero:       null,
-    complemento:  null,
-    bairro:       null,
-    cidade:       null,
-    estado:       null,
+    descricao: null,
+    tipo: "pessoaFisica",
+    cpfCnpj: null,
+    telefone: null,
+    email: null,
+    cep: null,
+    rua: null,
+    numero: null,
+    complemento: null,
+    bairro: null,
+    cidade: null,
+    estado: null,
 
     vendedor: Vendedor
 }
+
+export const StatusPagamento = [
+    "NaoPago",
+    "Pago",
+];
+
+export const StatusEntrega = [
+    "Pendente",
+    "EmTransporte",
+    "Entregue",
+];
+
+export const StatusPedido = [
+    "Pendente",
+    "Aprovado",
+    "EmTransporte",
+    "Entregue",
+    "Cancelado",
+    "Devolvido",
+];
 
 export const PedidoSaida = {
 	id: null,
@@ -193,25 +213,34 @@ export function aplicarMascaraCEP(e, setItem) {
     }));
 };
 
+export function aplicarMascaraData(e, setValue) {
+    const value = e.target.value;
+    const digits = value.replace(/\D/g, '');
 
+    // Aplica a máscara: DD/MM/AAAA
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    if (digits.length <= 8) return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
 
+    setValue(`${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`);
+};
 
+export function aplicarMascaraDinheiro(e, setValue) {
+    const value = e.target.value;
+    const name = e.target.name;
+    const digits = value.replace(/\D/g, '');
 
+    // Converte para número e divide por 100 para centavos
+    const number = parseFloat(digits) / 100;
 
+    // Formata como moeda BRL
+    const result = number.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+    });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    setValue(prev => ({
+        ...prev,
+        [name]: result
+    }));
+};

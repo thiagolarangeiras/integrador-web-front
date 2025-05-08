@@ -10,7 +10,7 @@ export default function Produtos() {
 	const [page, setPage] = useState(0);
 	const [showAddModal, setShowAddModal] = useState(false);
 	const [editId, setEditId] = useState(null);
-	const [items, setItems] = useState([{ ...Produto, id: 0 }]);
+	const [items, setItems] = useState([]);
 	const [newItem, setNewItem] = useState(Produto);
 
 	useEffect(() => {
@@ -118,8 +118,8 @@ function Modal({ editId, newItem, setNewItem, handleSubmit, handleModalClose, ha
 
 	useEffect(() => {
 		if (editId) {
-			setMarca(newItem.marca.nome);
-			setFornecedor(newItem.fornecedor.nome);
+			setMarca(newItem.marca?.nome);
+			setFornecedor(newItem.fornecedor?.nome);
 		}
 	}, [])
 

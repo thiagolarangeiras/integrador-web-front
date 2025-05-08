@@ -66,6 +66,10 @@ const router = createBrowserRouter([
                 element: <PedidosSaida />,
             },
             {
+                path: "/pedidos/saida/:id",
+                element: <PedidosSaidaNovo />,
+            },
+            {
                 path: "/pedidos/saida/novo",
                 element: <PedidosSaidaNovo />,
             },

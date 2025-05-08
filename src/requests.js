@@ -553,8 +553,8 @@ export async function deletePedidoSaida(id) {
     const token = localStorage.getItem("token");
     let init = getInit("DELETE", token);
     const response = await fetch(`${url}/pedido-saida/${id}`, init);
-    if (response.status != 200) return null;
-    return await response.json();
+    if (response.status != 200) return false;
+    return true;
 }
 
 // Pedido Saida Produto
