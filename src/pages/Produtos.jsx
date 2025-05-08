@@ -1,38 +1,17 @@
 import { useState, useEffect } from "react";
 import { getProdutoLista, postProduto, patchProduto, deleteProduto, getMarcaListaNome, getMarcaLista, getFornecedorListaNome, getFornecedorLista } from "../requests";
+import { Produto } from "../utils";
 import Header from "../components/Header";
 import Cards from "../components/Cards";
 import Table from "../components/Table";
 import Filters from "../components/Filters";
 
-const defaultMarca = {
-	id: null,
-	nome: null,
-}
-
-const defaultFornecedor = {
-	id: null,
-    nome: null,
-}
-
-const defaultItem = {
-	idFornecedor: null,
-	idMarca: null,
-	nome: null,
-	descricao: null,
-	valorCompra: null,
-	valorVenda: null,
-	qtEstoque: null,
-	marca: defaultMarca,
-	fornecedor: defaultFornecedor,
-}
-
 export default function Produtos() {
 	const [page, setPage] = useState(0);
 	const [showAddModal, setShowAddModal] = useState(false);
 	const [editId, setEditId] = useState(null);
-	const [items, setItems] = useState([{ ...defaultItem, id: 0 }]);
-	const [newItem, setNewItem] = useState(defaultItem);
+	const [items, setItems] = useState([{ ...Produto, id: 0 }]);
+	const [newItem, setNewItem] = useState(Produto);
 
 	const tableColums = [
 		{ label: "Codigo", value: "id" },
@@ -44,16 +23,6 @@ export default function Produtos() {
 		{ label: "V. Venda", value: "valorVenda" },
 		{ label: "Estoque", value: "qtEstoque" },
 	];
-
-	// const inputValues = [
-	// 	{ type: "text", label: "Nome", value: newItem.nome, name: "nome" },
-	// 	{ type: "text", label: "Descrição", value: newItem.descricao, name: "descricao" },
-	// 	{ type: "text", label: "Marca", value: newItem.idMarca, name: "idMarca" },
-	// 	{ type: "text", label: "Fornecedor", value: newItem.idFornecedor, name: "idFornecedor" },
-	// 	{ type: "number", label: "V. Compra", value: newItem.valorCompra, name: "valorCompra" },
-	// 	{ type: "number", label: "V. Venda", value: newItem.valorVenda, name: "valorVenda" },
-	// 	{ type: "number", label: "Estoque", value: newItem.qtEstoque, name: "qtEstoque" },
-	// ];
 
 	useEffect(() => {
 		handleUpdate();
@@ -76,7 +45,7 @@ export default function Produtos() {
 	function handleModalClose(e) {
 		setShowAddModal(false);
 		setEditId(null);
-		setNewItem(defaultItem);
+		setNewItem(Produto);
 	};
 
 	async function handleSubmit(e) {

@@ -1,61 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { getPedidoSaida, postPedidoSaida, patchPedidoSaida, postPedidoSaidaProduto, patchPedidoSaidaProduto, getPedidoSaidaProduto, deletePedidoSaidaProduto, getProdutoLista } from "../requests";
+import { PedidoSaida } from "../utils";
 import Header from "../components/Header";
-
-const defaultCliente = {
-	id: null,
-	nome: null,
-}
-
-const defaultVendedor = {
-	id: null,
-	nome: null,
-}
-
-const defaultPedidoSaida = {
-	id: null,
-	idCliente: null,
-	idVendedor: null,
-	dataCriacao: null,
-	dataVigencia: null,
-	dataEntregaPrevista: null,
-	dataEntregaReal: null,
-	status: null,
-	statusEntrega: null,
-	statusPagamento: null,
-	valorTotal: null,
-	valorFrete: null,
-
-	cliente: defaultCliente,
-	vendedor: defaultVendedor,
-};
-
-const defaultProduto = {
-	idFornecedor: null,
-	idMarca: null,
-	nome: null,
-	descricao: null,
-	valorCompra: null,
-	valorVenda: null,
-	qtEstoque: null,
-};
-
-const defaultPedidoSaidaProduto = {
-	id: null,
-	idPedidoSaida: null,
-	idProduto: null,
-	qtde: null,
-	valorUnitario: null,
-	valorTotal: null,
-
-	produto: defaultProduto,
-};
-
 
 export default function PedidosSaidaNovo() {
 	const { id } = useParams();
-	const [item, setItem] = useState(defaultPedidoSaida);
+	const [item, setItem] = useState(PedidoSaida);
 	const [produtos, setProdutos] = useState([]);
 
 	useEffect(() => {

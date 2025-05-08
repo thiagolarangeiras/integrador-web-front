@@ -12,49 +12,47 @@ import {
     getVendedorListaNome,
 } from "../requests";
 
+import { Cliente, EstadosBr } from '../utils';
+
 import Header from "../components/Header";
 import Cards from "../components/Cards";
 import Table, { TableSearch } from "../components/Table";
 import Filters from "../components/Filters";
 
-const defaultCliente = {
-    id: null,
-    idVendedor: null,
-    nomePessoa: null,
-    nomeEmpresa: null,
-    nomeFanstasia: null,
-    descricao: null,
-    tipo: null,
-    cpfcnpj: null,
-    telefone: null,
-    email: null,
-    cep: null,
-    rua: null,
-    numero: null,
-    complemento: null,
-    bairro: null,
-    cidade: null,
-    estado: null,
-}
-
-const defaultFornecedor = {
-    id: null,
-    nome: null,
-}
-
 export default function Clientes() {
     const [page, setPage] = useState(0);
-    const [showAddModal, setShowAddModal] = useState(false);
-    const [editId, setEditId] = useState(null);
-    const [items, setItems] = useState([{ ...defaultCliente, id: 0 }]);
-    const [newItem, setNewItem] = useState(defaultCliente);
-    const [filters, setFilters] = useState({
-        tipo: 'Todos Tipos',
-        status: 'Todos Status',
-        sort: 'Nome (A-Z)'
-    });
+    const [modal, setModal] = useState(false);
+    const [modalItem, setModalItem] = useState(Cliente);
+    const [items, setItems] = useState([]);
+    const [filters, setFilters] = useState({});
 
-    // Aplicar filtros
+    useEffect(() => {
+        handleUpdate();
+    }, [page]);
+
+    function handleUpdate() {
+        getClienteLista(page).then((value) => {
+            if (value != null) {
+                setItems(value);
+            }
+        })
+    }
+
+    function handleEdit(item) {
+        setModalItem(item);
+        setModal(true);
+    };
+
+    function handleNew() {
+        setModal(true);
+    }
+
+    function handleDelete(id) {
+        deleteCliente(id).then(() => {
+            handleUpdate();
+        });
+    };
+
     function applyFilters() {
         let filteredClientes = [...items];
 
@@ -94,67 +92,7 @@ export default function Clientes() {
         const { name, value } = e.target;
         setFilters(prev => ({ ...prev, [name]: value }));
     };
-    
-    const tableColums = [
-        { label: "Codigo", value: "id" },
-        { label: "Vendedor", value: "idVendedor" },
-        { label: "Nome", value: "nomePessoa" },
-        { label: "Empresa", value: "nomeEmpresa" },
-        { label: "Fantasia/Apelido", value: "nomeFantasia" },
-        { label: "Descricao", value: "descricao" },
-        { label: "Tipo", value: "tipo" },
-        { label: "Documento", value: "cpfCnpj" },
-        { label: "Telefone", value: "telefone" },
-    ];
 
-    useEffect(() => {
-        handleUpdate();
-    }, [page]);
-
-    function handleInputChange(e) {
-        const { name, value } = e.target;
-        setNewItem(prev => ({ ...prev, [name]: value }));
-    };
-
-    function handleUpdate() {
-        getClienteLista(page).then((value) => {
-            if (value != null) {
-                setItems(value);
-            }
-        })
-    }
-
-    function handleModalClose(e) {
-        setShowAddModal(false);
-        setEditId(null);
-        setNewItem(defaultItem);
-    };
-
-    async function handleSubmit(e) {
-        e.preventDefault();
-        if (editId) await patchCliente(editId, newItem);
-        else await postCliente(newItem);
-        handleUpdate();
-        handleModalClose();
-    };
-
-    function handleEdit(item) {
-        setEditId(item.id);
-        setNewItem(item);
-        setShowAddModal(true);
-    };
-
-    function handleNew() {
-        setShowAddModal(true);
-    }
-
-    function handleDelete(id) {
-        deleteCliente(id).then(() => {
-            handleUpdate();
-        });
-    };
-
-    // Exportação
     function exportToCSV() {
         const headers = ['Nome', 'Tipo', 'Documento', 'Telefone', 'Email', 'CEP', 'Endereço', 'Status'];
         const data = filteredClientes.map(cliente => [
@@ -262,7 +200,17 @@ export default function Clientes() {
                     <Table
                         nome={"Cliente"}
                         items={items}
-                        colunas={tableColums}
+                        colunas={[
+                            { label: "Codigo", value: "id" },
+                            { label: "Vendedor", value: "idVendedor" },
+                            { label: "Nome", value: "nomePessoa" },
+                            { label: "Empresa", value: "nomeEmpresa" },
+                            { label: "Fantasia/Apelido", value: "nomeFantasia" },
+                            { label: "Descricao", value: "descricao" },
+                            { label: "Tipo", value: "tipo" },
+                            { label: "Documento", value: "cpfCnpj" },
+                            { label: "Telefone", value: "telefone" },
+                        ]}
                         handleEdit={handleEdit}
                         handleDelete={handleDelete}
                         handleUpdate={handleUpdate}
@@ -272,29 +220,39 @@ export default function Clientes() {
                     />
                 </main>
             </div>
-            {showAddModal && (
+            {modal && (
                 <Modal
-                    editId={editId}
-                    newItem={newItem}
-                    setNewItem={setNewItem}
-                    handleSubmit={handleSubmit}
                     handleModalClose={handleModalClose}
-                    handleInputChange={handleInputChange}
+                    item={modalItem}
+                    setItem={setModalItem}
                 />
             )}
         </div>
     );
 }
 
-function Modal({ editId, newItem, setNewItem, handleSubmit, handleModalClose, handleInputChange }) {
+function Modal({ handleModalClose, item, setItem }) {
     const [vendedor, setVendedor] = useState("");
     const [showVendedorModal, setShowVendedorModal] = useState(false);
 
     useEffect(() => {
-        if (editId) {
+        if (newItem.id) {
             setVendedor(newItem.vendedor.nome);
         }
     }, [])
+    
+    async function handleSubmit(e) {
+        e.preventDefault();
+        if (newItem.id) await patchCliente(newItem.id, newItem);
+        else await postCliente(newItem);
+        handleUpdate();
+        handleModalClose();
+    };
+
+    function handleInputChange(e) {
+        const { name, value } = e.target;
+        setModalItem(prev => ({ ...prev, [name]: value }));
+    };
 
     function handleVendedorModalOpen() {
         setShowVendedorModal(true);
@@ -315,7 +273,7 @@ function Modal({ editId, newItem, setNewItem, handleSubmit, handleModalClose, ha
                 formattedValue = formattedValue.replace(/(\d{3})(\d)/, '$1.$2');
                 formattedValue = formattedValue.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
             }
-        } else {    
+        } else {
             if (value.length <= 14) {
                 formattedValue = value.replace(/^(\d{2})(\d)/, '$1.$2');
                 formattedValue = formattedValue.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
@@ -324,7 +282,7 @@ function Modal({ editId, newItem, setNewItem, handleSubmit, handleModalClose, ha
             }
         }
 
-        setNewItem(prev => ({
+        setModalItem(prev => ({
             ...prev,
             cpfCnpj: formattedValue
         }));
@@ -368,7 +326,7 @@ function Modal({ editId, newItem, setNewItem, handleSubmit, handleModalClose, ha
         <>
             <div className="modal-overlay">
                 <div className="modal">
-                    <h2>{editId ? 'Editar Produto' : 'Adicionar Novo Produto'}</h2>
+                    <h2>{newItem.id ? 'Editar Produto' : 'Adicionar Novo Produto'}</h2>
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label>nome completo/razão social</label>
@@ -435,20 +393,19 @@ function Modal({ editId, newItem, setNewItem, handleSubmit, handleModalClose, ha
                             </div>
                         </div>
 
-                        <div className="form-group">
-                            <label>CEP</label>
-                            <input
-                                type="text"
-                                name="cep"
-                                value={newItem.cep}
-                                onChange={aplicarMascaraCEP}
-                                required
-                                placeholder="00000-000"
-                                maxLength="9"
-                            />
-                        </div>
-
                         <div className="form-row">
+                            <div className="form-group">
+                                <label>CEP</label>
+                                <input
+                                    type="text"
+                                    name="cep"
+                                    value={newItem.cep}
+                                    onChange={aplicarMascaraCEP}
+                                    required
+                                    placeholder="00000-000"
+                                    maxLength="9"
+                                />
+                            </div>
                             <div className="form-group">
                                 <label>Rua</label>
                                 <input
@@ -513,34 +470,12 @@ function Modal({ editId, newItem, setNewItem, handleSubmit, handleModalClose, ha
                                     onChange={handleInputChange}
                                     required
                                 >
-                                    <option value="">UF</option>
-                                    <option value="AC">AC</option>
-                                    <option value="AL">AL</option>
-                                    <option value="AP">AP</option>
-                                    <option value="AM">AM</option>
-                                    <option value="BA">BA</option>
-                                    <option value="CE">CE</option>
-                                    <option value="DF">DF</option>
-                                    <option value="ES">ES</option>
-                                    <option value="GO">GO</option>
-                                    <option value="MA">MA</option>
-                                    <option value="MT">MT</option>
-                                    <option value="MS">MS</option>
-                                    <option value="MG">MG</option>
-                                    <option value="PA">PA</option>
-                                    <option value="PB">PB</option>
-                                    <option value="PR">PR</option>
-                                    <option value="PE">PE</option>
-                                    <option value="PI">PI</option>
-                                    <option value="RJ">RJ</option>
-                                    <option value="RN">RN</option>
-                                    <option value="RS">RS</option>
-                                    <option value="RO">RO</option>
-                                    <option value="RR">RR</option>
-                                    <option value="SC">SC</option>
-                                    <option value="SP">SP</option>
-                                    <option value="SE">SE</option>
-                                    <option value="TO">TO</option>
+                                    {EstadosBr.map((e) => (
+                                        <option key={e} value={e}>
+                                            {e}
+                                        </option>
+                                    ))}
+                                    
                                 </select>
                             </div>
                         </div>
@@ -555,7 +490,7 @@ function Modal({ editId, newItem, setNewItem, handleSubmit, handleModalClose, ha
 
                         <div className="modal-actions">
                             <button type="button" className="btn secondary" onClick={handleModalClose}>Cancelar</button>
-                            <button type="submit" className="btn primary">{editId ? 'Atualizar' : 'Adicionar'}</button>
+                            <button type="submit" className="btn primary">{newItem.id ? 'Atualizar' : 'Adicionar'}</button>
                         </div>
                     </form>
                 </div>
@@ -563,7 +498,7 @@ function Modal({ editId, newItem, setNewItem, handleSubmit, handleModalClose, ha
             {showVendedorModal && (
                 <ModalSearchVendedor
                     handleModalClose={handleVendedorModalClose}
-                    setNewItem={setNewItem}
+                    setModalItem={setModalItem}
                     setMarca={setVendedor}
                 />
             )}
@@ -571,7 +506,7 @@ function Modal({ editId, newItem, setNewItem, handleSubmit, handleModalClose, ha
     );
 }
 
-function ModalSearchVendedor({ handleModalClose, setNewItem, setVendedor }) {
+function ModalSearchVendedor({ handleModalClose, setModalItem, setVendedor }) {
     const [search, setSearch] = useState({ id: 0, nome: "" });
     const [items, setItems] = useState([]);
 
@@ -580,7 +515,7 @@ function ModalSearchVendedor({ handleModalClose, setNewItem, setVendedor }) {
     }, []);
 
     function handleSelect(item) {
-        setNewItem(prev => ({ ...prev, idVendedor: item.id }));
+        setModalItem(prev => ({ ...prev, idVendedor: item.id }));
         setVendedor(item.nome)
         handleModalClose();
     }

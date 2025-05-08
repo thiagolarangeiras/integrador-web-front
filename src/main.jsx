@@ -72,50 +72,41 @@ function SideBar() {
             <div className="sidebar">
                 <div className="sidebar-header">ERP web</div>    
                 <ul className="sidebar-menu">
-                    <li 
-                        onClick={() => navigate("/")} 
-                        className={isCurrentPath("/") ? "active" : ""}
-                    >Home</li>
+                    <li onClick={() => navigate("/")} className={isCurrentPath("/") ? "active" : ""}>
+                        Home
+                    </li>
+
+                    <li onClick={() => navigate("/usuarios")} className={isCurrentPath("/usuarios") ? "active" : ""}> 
+                        Usuarios
+                    </li>
+
+                    <li onClick={() => navigate("/marca")} className={isCurrentPath("/marca") ? "active" : ""}>
+                        Marca
+                    </li>
+
+                    <li onClick={() => navigate("/fornecedores")} className={isCurrentPath("/fornecedores") ? "active" : ""}>
+                        Fornecedores
+                    </li>
+
+                    <li onClick={() => navigate("/produtos")} className={isCurrentPath("/produtos") ? "active" : ""}>
+                        Produtos
+                    </li>
                     
-                    <li 
-                        onClick={() => navigate("/clientes")}
-                        className={isCurrentPath("/clientes") ? "active" : ""}
-                    >Clientes</li>
+                    <li onClick={() => navigate("/clientes")} className={isCurrentPath("/clientes") ? "active" : ""}>
+                        Clientes
+                    </li>
+
+                    <li onClick={() => navigate("/vendedores")} className={isCurrentPath("/vendedores") ? "active" : ""}> 
+                        Vendedores
+                    </li>
+
+                    <li onClick={() => navigate("/pedidos/saida")} className={isCurrentPath("/pedidos/saida") ? "active" : ""}>
+                        Pedidos de Saída
+                    </li>
                     
-                    <li 
-                        onClick={() => navigate("/fornecedores")}
-                        className={isCurrentPath("/fornecedores") ? "active" : ""}
-                    >Fornecedores</li>
-                    
-                    <li 
-                        onClick={() => navigate("/marca")}
-                        className={isCurrentPath("/marca") ? "active" : ""}
-                    >Marca</li>
-                    
-                    <li 
-                        onClick={() => navigate("/pedidos/entrada")}
-                        className={isCurrentPath("/pedidos/entrada") ? "active" : ""}
-                    >Pedidos de Entrada</li>
-                    
-                    <li 
-                        onClick={() => navigate("/pedidos/saida")}
-                        className={isCurrentPath("/pedidos/saida") ? "active" : ""}
-                    >Pedidos de Saída</li>
-                    
-                    <li 
-                        onClick={() => navigate("/produtos")}
-                        className={isCurrentPath("/produtos") ? "active" : ""}
-                    >Produtos</li>
-                    
-                    <li 
-                        onClick={() => navigate("/usuarios")}
-                        className={isCurrentPath("/usuarios") ? "active" : ""}
-                    >Usuarios</li>
-                    
-                    <li 
-                        onClick={() => navigate("/vendedores")}
-                        className={isCurrentPath("/vendedores") ? "active" : ""}
-                    >Vendedores</li>                    
+                    <li onClick={() => navigate("/pedidos/entrada")} className={isCurrentPath("/pedidos/entrada") ? "active" : ""}>
+                        Pedidos de Entrada
+                    </li>
                     
                     <li onClick={() => navigate("/logout")}>Sair</li>
                 </ul>
@@ -145,7 +136,7 @@ const router = createBrowserRouter([
     },
     {
         //path: "/",
-        element: <SideBar />,
+        element: <Auth> <SideBar /> </Auth>,
         children: [
             {
                 path: "/",

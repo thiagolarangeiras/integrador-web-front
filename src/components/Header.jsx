@@ -5,7 +5,7 @@ export default function Header({ nomeBotao, nomePesquisa, handleNew }) {
 			<div className="header-content">
 				<div className="logo-container">
 					<div className="logo-icon">🛍️</div>
-					<h1>ProductFolio <span>Manager</span></h1>
+					<h1>IntegroSys <span>ERP</span></h1>
 				</div>
 				<div className="header-actions">
 					<div className="search-box">
