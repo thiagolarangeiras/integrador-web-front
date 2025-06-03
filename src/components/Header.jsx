@@ -21,7 +21,7 @@ export default function Header({ nomeBotao, nomePesquisa, handleNew }) {
 	);
 }
 
-export function HeaderForm({ nome }) {
+export function HeaderForm({ nome, botaoNome, botaoAcao }) {
 	return (
 		<header className="app-header">
 			<div className="header-content">
@@ -31,6 +31,11 @@ export function HeaderForm({ nome }) {
 				</div>
 				<div className="logo-container">
 					<h1>{nome}</h1>
+				</div>
+				<div className="header-actions">
+					<button className="btn primary new-product-btn" onClick={botaoAcao}>
+						{botaoNome}
+					</button>
 				</div>
 			</div>
 		</header>

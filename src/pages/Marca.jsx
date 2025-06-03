@@ -18,18 +18,18 @@ export default function Marcas() {
 		handleUpdate();
 	}, [page]);
 
-	function handleInputChange(e) {
+	async function handleInputChange(e) {
 		const { name, value } = e.target;
 		setNewMarca(prev => ({ ...prev, [name]: value }));
 	};
 
-	function handleUpdate() {
+	async function handleUpdate() {
 		getMarcaLista(page).then((value) => {
 			if (value != null) setMarca(value);
 		})
 	}
 
-	function handleModalClose(e) {
+	async function handleModalClose(e) {
 		setShowAddModal(false);
 		setEditId(null);
 		setNewMarca({
@@ -37,7 +37,7 @@ export default function Marcas() {
 		});
 	};
 
-	function handleSubmit(e) {
+	async function handleSubmit(e) {
 		e.preventDefault();
 		if (editId) {
 			patchMarca(editId, newMarca).then(() => {
@@ -51,7 +51,7 @@ export default function Marcas() {
 		handleModalClose();
 	};
 
-	function handleEdit(item) {
+	async function handleEdit(item) {
 		setEditId(item.id);
 		setNewMarca({
 			nome: item.nome,

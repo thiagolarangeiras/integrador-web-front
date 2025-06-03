@@ -85,7 +85,7 @@ export default function PedidosSaidaNovo() {
 	return (
 		<div className="layout">
 			<div className="app-container">
-				<HeaderForm nome={id ? "Atualizar Pedido" : "Novo Pedido" } />
+				<HeaderForm nome={id ? "Atualizar Pedido" : "Novo Pedido" } botaoNome={id ? 'Atualizar' : 'Adicionar'} botaoAcao={handleSubmit}  />
 				<form >
 					<div className="form-group">
 						<label>Cliente</label>
@@ -163,16 +163,16 @@ export default function PedidosSaidaNovo() {
 							<input type="text" name="valorFrete" value={item.valorFrete} onChange={(e) => aplicarMascaraDinheiro(e, setItem)} required />
 						</div>
 					</div>
-					<div className="modal-actions">
+					{/* <div className="modal-actions">
 						<button type="button" onClick={handleSubmit} className="btn primary">{id ? 'Atualizar' : 'Adicionar'}</button>
-					</div>
+					</div> */}
 				</form>
 				<main className="content-area">
-					{/* <TableProdutos
+					<TableProdutos
 						idPedidoSaida={id}
 						items={produtos}
 						setItems={setProdutos}
-					/> */}
+					/>
 				</main>
 				{clienteModal && (
 					<ModalSearchCliente handleModalClose={() => { setClienteModal(false); }} setItem={setItem} />
@@ -289,180 +289,192 @@ function ModalSearchCliente({ handleModalClose, setItem }) {
 	);
 }
 
-// export function TableProdutos({ idPedidoSaida, items, setItems }) {
-// 	const [showModal, setShowModal] = useState(false);
-// 	const [idPedidoSaidaProduto, setIdPedidoSaidaProduto] = useState(null);
+export function TableProdutos({ idPedido, items, setItems }) {
+	const [showModal, setModal] = useState(false);
+	const [idProdutoNovo, setIdProdutoNovo] = useState(null);
 
-// 	const colunas = [
-// 		{ label: "Cod. Produto", value: "idProduto" },
-// 		{ label: "Quantidade", value: "qtde" },
-// 		{ label: "Valor Unitario", value: "valorUnitario" },
-// 		{ label: "Valor Total", value: "valorTotal" },
-// 	];
+	const colunas = [
+		{ label: "Cod. Produto", value: "idProduto" },
+		{ label: "Quantidade", value: "qtde" },
+		{ label: "Valor Unitario", value: "valorUnitario" },
+		{ label: "Valor Total", value: "valorTotal" },
+	];
 
-// 	function handleUpdate() {
-// 		if (idPedidoSaida == null || idPedidoSaida < 1) return;
-// 		getPedidoSaidaProduto(id).then((value) => {
-// 			if (value != null) {
-// 				setItems(value);
-// 			}
-// 		})
-// 	}
+	async function handleNew() {
+		setIdProdutoNovo(null);
+		setModal(true);
+	}
 
-// 	async function handleEdit(id) {
-// 		setIdPedidoSaidaProduto(id);
-// 		setShowModal(true)
-// 	}
+	async function handleUpdate() {
+		if (idPedido == null || idPedido < 1) {
+			return;
+		} 
+		let value = await getPedidoSaidaProduto(id);
+		if (value != null) { 
+			setItems(value);
+		}
+	}
 
-// 	async function handleDelete(id) {
-// 		await deletePedidoSaidaProduto(id);
-// 	}
+	async function handleEdit(id) {
+		setIdProdutoNovo(id);
+		setModal(true);
+	}
 
-// 	return (
-// 		<div className="product-table-container">
-// 			<div className="table-header">
-// 				<div className="table-actions">
-// 					<button className="btn export-btn" onClick={() => { }}>📑 Adicionar</button>
-// 					<button className="btn refresh-btn" onClick={handleUpdate}>🔄 Atualizar</button>
-// 				</div>
-// 			</div>
+	async function handleDelete(id) {
+		if (idPedido == null || idPedido < 1) {
+			setItems((prev) => prev.filter(item => item.id !== id));
+			return;
+		};
+		await deletePedidoSaidaProduto(id);
+		handleUpdate();
+	}
 
-// 			<table className="product-table">
-// 				<thead>
-// 					<tr>
-// 						{colunas.map(coluna => (
-// 							<th>{coluna.label}</th>
-// 						))}
-// 						<th>AÇÕES</th>
-// 					</tr>
-// 				</thead>
-// 				<tbody>
-// 					{items.map(item => (
-// 						<tr key={item.id}>
-// 							{colunas.map(coluna => {
-// 								let keys = coluna.value.split(".")
-// 								if (keys.length > 1) {
-// 									let result = item;
-// 									for (const key of keys) {
-// 										result = result[key];
-// 									}
-// 									return (<td>{result}</td>)
-// 								}
-// 								return (<td>{item[coluna.value]}</td>)
+	return (
+		<div className="product-table-container">
+			<div className="table-header">
+				<div className="table-actions">
+					<button className="btn export-btn" onClick={handleNew}>📑 Adicionar</button>
+					<button className="btn refresh-btn" onClick={handleUpdate}>🔄 Atualizar</button>
+				</div>
+			</div>
 
-// 							})}
-// 							<td className="action-buttons">
-// 								<button className="btn action-btn edit-btn" onClick={() => handleEdit(item.id)}>✏️</button>
-// 								<button className="btn action-btn delete-btn" onClick={() => handleDelete(item.id)}>🗑️</button>
-// 							</td>
-// 						</tr>
-// 					))}
-// 				</tbody>
-// 			</table>
+			<table className="product-table">
+				<thead>
+					<tr>
+						{colunas.map(coluna => (
+							<th>{coluna.label}</th>
+						))}
+						<th>AÇÕES</th>
+					</tr>
+				</thead>
+				<tbody>
+					{items.map(item => (
+						<tr key={item.id}>
+							{colunas.map(coluna => {
+								let keys = coluna.value.split(".")
+								if (keys.length > 1) {
+									let result = item;
+									for (const key of keys) {
+										result = result[key];
+									}
+									return (<td>{result}</td>)
+								}
+								return (<td>{item[coluna.value]}</td>)
 
-// 			<div className="table-footer">
-// 				<span className="showing-text">👁️ Mostrando {items.length} de {items.length}</span>
-// 			</div>
-// 			{showModal && (
-// 				<Modal
-// 					idPedidoSaida={idPedidoSaida}
-// 					idPedidoSaidaProduto={idPedidoSaidaProduto}
-// 					setItems={setItems}
-// 					setShowModals={setShowModals}
-// 				/>
-// 			)}
-// 		</div>
-// 	);
-// }
+							})}
+							<td className="action-buttons">
+								<button className="btn action-btn edit-btn" onClick={() => handleEdit(item.id)}>✏️</button>
+								<button className="btn action-btn delete-btn" onClick={() => handleDelete(item.id)}>🗑️</button>
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
 
-// function Modal({ idPedidoSaida, idPedidoSaidaProduto, setItems, setShowModals }) {
-// 	const [itemEdit, setItemEdit] = useState(defaultPedidoSaidaProduto);
-// 	const [produto, setProduto] = useState("");
-// 	const [showProdutoModal, setShowProdutoModal] = useState(false);
-// 	useEffect(async () => {
-// 		if (idPedidoSaidaProduto) {
-// 			let pedidoProduto = await getPedidoSaidaProduto(idPedidoSaidaProduto);
-// 			setItemEdit(pedidoProduto);
-// 		}
-// 	}, [])
+			<div className="table-footer">
+				<span className="showing-text">👁️ Mostrando {items.length} de {items.length}</span>
+			</div>
+			{showModal && (
+				<Modal
+					idPedido={idPedido}
+					idProduto={idProdutoNovo}
+					setItems={setItems}
+					setModal={setModal}
+				/>
+			)}
+		</div>
+	);
+}
 
-// 	async function handleSubmit(e) {
-// 		e.preventDefault();
-// 		if (!idPedidoSaida) {
-// 			await setItems(prev => ({ ...prev, value }));
-// 			handleClose();
-// 			return;
-// 		}
+function Modal({ idPedido, idProduto, setItems, setModal }) {
+	const [item, setItem] = useState(defaultPedidoSaidaProduto);
+	const [produto, setProduto] = useState("");
+	const [showProdutoModal, setShowProdutoModal] = useState(false);
+	
+	useEffect(async () => {
+		if (idProduto) {
+			let pedidoProduto = await getPedidoSaidaProduto(idProduto);
+			setItemEdit(pedidoProduto);
+		}
+	}, [])
 
-// 		if (idPedidoSaidaProduto) {
-// 			await patchPedidoSaidaProduto(idPedidoSaidaProduto, itemEdit);
-// 		} else {
-// 			await postPedidoSaidaProduto(itemEdit);
-// 		}
-// 		handleUpdate();
-// 		handleClose();
-// 	}
+	async function handleSubmit(e) {
+		e.preventDefault();
+		if (!idPedidoSaida) {
+			await setItems(prev => ({ ...prev, value }));
+			handleClose();
+			return;
+		}
 
-// 	async function handleClose() {
-// 		setShowModals(false);
-// 		setItemEdit(defaultPedidoSaidaProduto);
-// 	}
+		if (idPedidoSaidaProduto) {
+			await patchPedidoSaidaProduto(idPedidoSaidaProduto, itemEdit);
+		} else {
+			await postPedidoSaidaProduto(itemEdit);
+		}
+		handleUpdate();
+		handleClose();
+	}
 
-// 	function handleProdutoModalOpen() {
-// 		setShowProdutoModal(true);
-// 	}
+	async function handleClose() {
+		setShowModals(false);
+		setItemEdit(defaultPedidoSaidaProduto);
+	}
 
-// 	function handleProdutoModalClose() {
-// 		setShowProdutoModal(false);
-// 	}
+	function handleProdutoModalOpen() {
+		setShowProdutoModal(true);
+	}
 
-// 	return (
-// 		<>
-// 			<div className="modal-overlay">
-// 				<div className="modal">
-// 					<h2>{idPedidoSaidaProduto ? 'Editar Produto' : 'Adicionar Novo Produto'}</h2>
-// 					<form onSubmit={handleSubmit}>
-// 						<div className="form-group">
-// 							<label>Produto</label>
-// 							<div class="input-group">
-// 								<button onClick={handleClienteModal} type="button">🔍</button>
-// 								<input type="number" name="idProduto" value={itemEdit.idProduto} onChange={handleInputChange} required />
-// 								<div class="info-text">{itemEdit.produto.nome}</div>
-// 							</div>
-// 						</div>
-// 						<div className="form-row">
-// 							<div className="form-group">
-// 								<label>Quantidade</label>
-// 								<input type="text" name="qtde" value={itemEdit.qtde} onChange={handleInputChange} required />
-// 							</div>
-// 							<div className="form-group">
-// 								<label>Valor Unitario</label>
-// 								<input type="text" name="valorUnitario" value={itemEdit.valorUnitario} onChange={handleInputChange} required />
-// 							</div>
-// 							<div className="form-group">
-// 								<label>Valor Total</label>
-// 								<input type="text" name="valorTotal" value={itemEdit.valorTotal} onChange={handleInputChange} required />
-// 							</div>
-// 						</div>
-// 						<div className="form-row">
-// 							<div className="modal-actions">
-// 								<button type="button" className="btn secondary" onClick={handleClose}>Cancelar</button>
-// 								<button type="submit" className="btn primary">{idPedidoSaidaProduto ? 'Atualizar' : 'Adicionar'}</button>
-// 							</div>
-// 						</div>
-// 					</form>
-// 				</div>
-// 			</div>
-// 			{showProdutoModal && (
-// 				<ModalSearchProduto
-// 					handleClose={handleProdutoModalClose}
-// 					setNewItem={setItemEdit}
-// 					setMarca={setProduto}
-// 				/>
-// 			)}
-// 		</>
-// 	);
-// }
+	function handleProdutoModalClose() {
+		setShowProdutoModal(false);
+	}
+
+	return (
+		<>
+			<div className="modal-overlay">
+				<div className="modal">
+					<h2>{idPedidoSaidaProduto ? 'Editar Produto' : 'Adicionar Novo Produto'}</h2>
+					<form onSubmit={handleSubmit}>
+						<div className="form-group">
+							<label>Produto</label>
+							<div class="input-group">
+								<button onClick={handleClienteModal} type="button">🔍</button>
+								<input type="number" name="idProduto" value={itemEdit.idProduto} onChange={handleInputChange} required />
+								<div class="info-text">{itemEdit.produto.nome}</div>
+							</div>
+						</div>
+						<div className="form-row">
+							<div className="form-group">
+								<label>Quantidade</label>
+								<input type="text" name="qtde" value={itemEdit.qtde} onChange={handleInputChange} required />
+							</div>
+							<div className="form-group">
+								<label>Valor Unitario</label>
+								<input type="text" name="valorUnitario" value={itemEdit.valorUnitario} onChange={handleInputChange} required />
+							</div>
+							<div className="form-group">
+								<label>Valor Total</label>
+								<input type="text" name="valorTotal" value={itemEdit.valorTotal} onChange={handleInputChange} required />
+							</div>
+						</div>
+						<div className="form-row">
+							<div className="modal-actions">
+								<button type="button" className="btn secondary" onClick={handleClose}>Cancelar</button>
+								<button type="submit" className="btn primary">{idPedidoSaidaProduto ? 'Atualizar' : 'Adicionar'}</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			{showProdutoModal && (
+				<ModalSearchProduto
+					handleClose={handleProdutoModalClose}
+					setNewItem={setItemEdit}
+					setMarca={setProduto}
+				/>
+			)}
+		</>
+	);
+}
 
 // function ModalSearchProduto({ handleClose, setNewItem, setMarca }) {
 // 	const [search, setSearch] = useState({ id: 0, nome: "" });

@@ -12,6 +12,7 @@ import Clientes from "./pages/Clientes.jsx";
 import Fornecedores from "./pages/Fornecedores.jsx";
 import Marca from "./pages/Marca.jsx";
 import PedidosEntrada from "./pages/PedidosEntrada.jsx";
+import PedidosEntradaNovo from "./pages/PedidosEntradaNovo.jsx";
 import PedidosSaida from "./pages/PedidosSaida.jsx";
 import PedidosSaidaNovo from "./pages/PedidosSaidaNovo.jsx";
 import Produtos from "./pages/Produtos.jsx";
@@ -60,6 +61,14 @@ const router = createBrowserRouter([
             {
                 path: "/pedidos/entrada",
                 element: <PedidosEntrada />,
+            },
+            {
+                path: "/pedidos/entrada/:id",
+                element: <PedidosEntradaNovo />,
+            },
+            {
+                path: "/pedidos/entrada/novo",
+                element: <PedidosEntradaNovo />,
             },
             {
                 path: "/pedidos/saida",
