@@ -26,17 +26,8 @@ function getInit(method, token){
 // ["Access-Control-Allow-Credentials", "true"]
 
 //Login
-
 export async function getTeste() {
-    const init = {
-        method: "GET",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
-        headers: { "Content-Type": "application/json" },
-    };
+    let init = getInit("GET", "");
     const response = await fetch(`${url}/teste`, init);
     if(response.status === 200) return true;
     return false;
@@ -44,34 +35,15 @@ export async function getTeste() {
 
 export async function getTesteLogin() {
     const token = localStorage.getItem("token");
-    const init = {
-        method: "GET",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
-        headers: { 
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
-    };
+    let init = getInit("GET", token);
     const response = await fetch(`${url}/teste/login`, init);
     if(response.status === 200) return true;
     return false;
 }
 
 export async function postLogin(dados) {
-    const init = {
-        method: "POST",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
-        body: JSON.stringify(dados),
-    };
+    let init = getInit("POST", token);
+    init.body = JSON.stringify(dados);
     const response = await fetch(`${url}/auth/login`, init);
     const result = await response.json();
     localStorage.setItem("token", result.token);
@@ -81,111 +53,6 @@ export async function postLogin(dados) {
 export async function logout() {
     localStorage.removeItem("token");
     return true;
-}
-
-// Tentativa de padrao
-export const callTypes = {
-    vendedor: "vendedor",
-    usuario: "usuario",
-    produto: "produto",
-    pedidoSaidaParcela: "pedido-saida-parcela",
-    pedidoEntrada: "pedido-entrada",
-    pedidoEntradaProduto: "pedido-entrada-produto",
-    pedidoEntradaParcela: "pedido-entrada-parcela",
-    cliente: "cliente",
-}
-
-export async function get(type, id) {
-    const token = localStorage.getItem("token");
-    const init = {
-        method: "GET",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-    };
-    const response = await fetch(`${url}/${type}/${id}`, init);
-    return await response.json();
-}
-
-export async function getLista(type, page, count= 50) {
-    const token = localStorage.getItem("token");
-    const init = {
-        method: "GET",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-    };
-    const response = await fetch(`${url}/${type}?page=${page}&count=${count}`, init);
-    return await response.json();
-}
-
-export async function post(type, dados) {
-    const token = localStorage.getItem("token");
-    const init = {
-        method: "POST",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dados),
-    };
-    const response = await fetch(`${url}/${type}`, init);
-    return await response.json();
-}
-
-export async function patch(type, id, dados) {
-    const token = localStorage.getItem("token");
-    const init = {
-        method: "PATCH",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dados),
-    };
-    const response = await fetch(`${url}/${type}/${id}`, init);
-    return await response.json();
-}
-
-export async function deleteCall(type, id) {
-    const token = localStorage.getItem("token");
-    const init = {
-        method: "DELETE",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-    };
-    const response = await fetch(`${url}/${type}/${id}`, init);
-    if(response.status === 200) return true;
-    return false;
 }
 
 //Usuarios
