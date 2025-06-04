@@ -13,10 +13,19 @@ import {
 	getVendedorListaNome,
 	getClienteLista,
 	getClienteListaNome,
+	getProdutoListaNome,
 } from "../requests";
-import { aplicarMascaraDinheiro, handleInputChange, PedidoSaida, StatusEntrega, StatusPagamento, StatusPedido } from "../utils";
+import { 
+	aplicarMascaraDinheiro, 
+	handleInputChange, 
+	PedidoSaida, 
+	PedidoSaidaProduto, 
+	StatusEntrega, 
+	StatusPagamento, 
+	StatusPedido 
+} from "../utils";
 import { HeaderForm } from "../components/Header";
-import { TableSearch } from "../components/Table";
+import { TableListaDeProduto, TableSearch } from "../components/Table";
 
 export default function PedidosSaidaNovo() {
 	const navigate = useNavigate();
@@ -25,6 +34,35 @@ export default function PedidosSaidaNovo() {
 	const [produtos, setProdutos] = useState([]);
 	const [vendedorModal, setVendedorModal] = useState(false);
 	const [clienteModal, setClienteModal] = useState(false);
+
+	// async function handleNew() {
+	// 	setIdProdutoNovo(null);
+	// 	setModal(true);
+	// }
+
+	// async function handleUpdate() {
+	// 	if (idPedido == null || idPedido < 1) {
+	// 		return;
+	// 	} 
+	// 	let value = await getPedidoSaidaProduto(id);
+	// 	if (value != null) { 
+	// 		setItems(value);
+	// 	}
+	// }
+
+	// async function handleEdit(id) {
+	// 	setIdProdutoNovo(id);
+	// 	setModal(true);
+	// }
+
+	// async function handleDelete(id) {
+	// 	if (idPedido == null || idPedido < 1) {
+	// 		setItems((prev) => prev.filter(item => item.id !== id));
+	// 		return;
+	// 	};
+	// 	await deletePedidoSaidaProduto(id);
+	// 	handleUpdate();
+	// }
 
 	useEffect(() => {
 		handleUpdate();
@@ -198,7 +236,8 @@ function ModalSearchVendedor({ handleModalClose, setItem }) {
 		if (value != null) setSearchItems(value);
 	}
 
-	async function handleSelect(item) {
+	async function handleSelect(e, item) {
+		e.preventDefault();
 		setItem(prev => ({ ...prev, idVendedor: item.id, vendedor: item }));
 		handleModalClose();
 	}
@@ -250,7 +289,8 @@ function ModalSearchCliente({ handleModalClose, setItem }) {
 		if (value != null) setSearchItems(value);
 	}
 
-	async function handleSelect(item) {
+	async function handleSelect(e, item) {
+		e.preventDefault();
 		setItem(prev => ({ ...prev, idCliente: item.id, cliente: item }));
 		handleModalClose();
 	}
@@ -293,245 +333,186 @@ export function TableProdutos({ idPedido, items, setItems }) {
 	const [showModal, setModal] = useState(false);
 	const [idProdutoNovo, setIdProdutoNovo] = useState(null);
 
-	const colunas = [
-		{ label: "Cod. Produto", value: "idProduto" },
-		{ label: "Quantidade", value: "qtde" },
-		{ label: "Valor Unitario", value: "valorUnitario" },
-		{ label: "Valor Total", value: "valorTotal" },
-	];
-
 	async function handleNew() {
 		setIdProdutoNovo(null);
 		setModal(true);
 	}
 
-	async function handleUpdate() {
-		if (idPedido == null || idPedido < 1) {
-			return;
-		} 
-		let value = await getPedidoSaidaProduto(id);
-		if (value != null) { 
-			setItems(value);
-		}
-	}
-
-	async function handleEdit(id) {
-		setIdProdutoNovo(id);
+	async function handleEdit(id, index) {
+		setIdProdutoNovo({id: id, index: index});
 		setModal(true);
 	}
 
-	async function handleDelete(id) {
-		if (idPedido == null || idPedido < 1) {
-			setItems((prev) => prev.filter(item => item.id !== id));
-			return;
-		};
-		await deletePedidoSaidaProduto(id);
-		handleUpdate();
-	}
-
-	return (
-		<div className="product-table-container">
-			<div className="table-header">
-				<div className="table-actions">
-					<button className="btn export-btn" onClick={handleNew}>📑 Adicionar</button>
-					<button className="btn refresh-btn" onClick={handleUpdate}>🔄 Atualizar</button>
-				</div>
-			</div>
-
-			<table className="product-table">
-				<thead>
-					<tr>
-						{colunas.map(coluna => (
-							<th>{coluna.label}</th>
-						))}
-						<th>AÇÕES</th>
-					</tr>
-				</thead>
-				<tbody>
-					{items.map(item => (
-						<tr key={item.id}>
-							{colunas.map(coluna => {
-								let keys = coluna.value.split(".")
-								if (keys.length > 1) {
-									let result = item;
-									for (const key of keys) {
-										result = result[key];
-									}
-									return (<td>{result}</td>)
-								}
-								return (<td>{item[coluna.value]}</td>)
-
-							})}
-							<td className="action-buttons">
-								<button className="btn action-btn edit-btn" onClick={() => handleEdit(item.id)}>✏️</button>
-								<button className="btn action-btn delete-btn" onClick={() => handleDelete(item.id)}>🗑️</button>
-							</td>
-						</tr>
-					))}
-				</tbody>
-			</table>
-
-			<div className="table-footer">
-				<span className="showing-text">👁️ Mostrando {items.length} de {items.length}</span>
-			</div>
-			{showModal && (
-				<Modal
-					idPedido={idPedido}
-					idProduto={idProdutoNovo}
-					setItems={setItems}
-					setModal={setModal}
-				/>
-			)}
-		</div>
-	);
-}
-
-function Modal({ idPedido, idProduto, setItems, setModal }) {
-	const [item, setItem] = useState(defaultPedidoSaidaProduto);
-	const [produto, setProduto] = useState("");
-	const [showProdutoModal, setShowProdutoModal] = useState(false);
-	
-	useEffect(async () => {
-		if (idProduto) {
-			let pedidoProduto = await getPedidoSaidaProduto(idProduto);
-			setItemEdit(pedidoProduto);
-		}
-	}, [])
-
-	async function handleSubmit(e) {
-		e.preventDefault();
-		if (!idPedidoSaida) {
-			await setItems(prev => ({ ...prev, value }));
-			handleClose();
-			return;
-		}
-
-		if (idPedidoSaidaProduto) {
-			await patchPedidoSaidaProduto(idPedidoSaidaProduto, itemEdit);
-		} else {
-			await postPedidoSaidaProduto(itemEdit);
-		}
-		handleUpdate();
-		handleClose();
-	}
-
-	async function handleClose() {
-		setShowModals(false);
-		setItemEdit(defaultPedidoSaidaProduto);
-	}
-
-	function handleProdutoModalOpen() {
-		setShowProdutoModal(true);
-	}
-
-	function handleProdutoModalClose() {
-		setShowProdutoModal(false);
+	async function handleDelete(id, index) {
+		setItems((prev) => {
+			prev.splice(index, 1);
+			return prev;
+		});
 	}
 
 	return (
 		<>
-			<div className="modal-overlay">
-				<div className="modal">
-					<h2>{idPedidoSaidaProduto ? 'Editar Produto' : 'Adicionar Novo Produto'}</h2>
-					<form onSubmit={handleSubmit}>
-						<div className="form-group">
-							<label>Produto</label>
-							<div class="input-group">
-								<button onClick={handleClienteModal} type="button">🔍</button>
-								<input type="number" name="idProduto" value={itemEdit.idProduto} onChange={handleInputChange} required />
-								<div class="info-text">{itemEdit.produto.nome}</div>
-							</div>
-						</div>
-						<div className="form-row">
-							<div className="form-group">
-								<label>Quantidade</label>
-								<input type="text" name="qtde" value={itemEdit.qtde} onChange={handleInputChange} required />
-							</div>
-							<div className="form-group">
-								<label>Valor Unitario</label>
-								<input type="text" name="valorUnitario" value={itemEdit.valorUnitario} onChange={handleInputChange} required />
-							</div>
-							<div className="form-group">
-								<label>Valor Total</label>
-								<input type="text" name="valorTotal" value={itemEdit.valorTotal} onChange={handleInputChange} required />
-							</div>
-						</div>
-						<div className="form-row">
-							<div className="modal-actions">
-								<button type="button" className="btn secondary" onClick={handleClose}>Cancelar</button>
-								<button type="submit" className="btn primary">{idPedidoSaidaProduto ? 'Atualizar' : 'Adicionar'}</button>
-							</div>
-						</div>
-					</form>
-				</div>
-			</div>
-			{showProdutoModal && (
-				<ModalSearchProduto
-					handleClose={handleProdutoModalClose}
-					setNewItem={setItemEdit}
-					setMarca={setProduto}
+			<TableListaDeProduto 
+				items={items}
+				colunas={[
+					{ label: "Cod. Produto", value: "idProduto" },
+					{ label: "Nome", value: "produto.nome" },
+					{ label: "Quantidade", value: "qtde" },
+					{ label: "Valor Unitario", value: "valorUnitario" },
+					{ label: "Valor Total", value: "valorTotal" },
+				]}
+				handleDelete={handleDelete}
+				handleEdit={handleEdit}
+				handleNew={handleNew}
+			/>
+			{showModal && (
+				<Modal
+					idProduto={idProdutoNovo}
+					items={items}
+					setItems={setItems}
+					setModal={setModal}
 				/>
 			)}
 		</>
 	);
 }
 
-// function ModalSearchProduto({ handleClose, setNewItem, setMarca }) {
-// 	const [search, setSearch] = useState({ id: 0, nome: "" });
-// 	const [items, setItems] = useState([]);
+function Modal({ idProduto, items, setItems, setModal }) {
+	const [item, setItem] = useState(PedidoSaidaProduto);
+	const [produtoModal, setProdutoModal] = useState(false);
+	
+	useEffect(() => {
+		if(idProduto) {
+			setItem(items[idProduto.index]);
+		}
+	}, [])
 
-// 	useEffect(() => {
-// 		handleUpdate();
-// 	}, []);
+	async function openProdutoModal(){
+		setProdutoModal(true);
+	}
 
-// 	function handleSelect(item) {
-// 		setNewItem(prev => ({ ...prev, idProduto: item.id }));
-// 		setMarca(item.nome)
-// 		handleClose();
-// 	}
+	async function handleSubmit(e) {
+		e.preventDefault();
+		if(idProduto) {
+			await setItems(prev => {
+				prev[idProduto.index] = item;
+				return prev;
+			});
+		} else {
+			await setItems(prev => {
+				prev.push(item);
+				return prev;
+			});
+		}
+		handleClose();
+	}
 
-// 	function handleUpdate() {
-// 		getProdutoLista(0).then((value) => {
-// 			if (value != null) setItems(value);
-// 		})
-// 	}
+	async function handleClose() {
+		setModal(false);
+		setItem(PedidoSaidaProduto);
+	}
 
-// 	function handleUpdateName() {
-// 		getMarcaListaNome(search.nome, 0).then((value) => {
-// 			if (value != null) setItems(value);
-// 		})
-// 	}
+	return (
+		<>
+			<div className="modal-overlay">
+				<div className="modal">
+					<h2>{idProduto ? 'Editar Produto' : 'Adicionar Novo Produto'}</h2>
+					<form onSubmit={handleSubmit}>
+						<div className="form-group">
+							<label>Produto</label>
+							<div class="input-group">
+								<button onClick={openProdutoModal} type="button">🔍</button>
+								<input type="number" name="idProduto" value={item.idProduto} onChange={(e)=> handleInputChange(e, setItem)} required />
+								<div class="info-text">{item.produto?.nome}</div>
+							</div>
+						</div>
+						<div className="form-row">
+							<div className="form-group">
+								<label>Quantidade</label>
+								<input type="text" name="qtde" value={item.qtde} onChange={(e)=> handleInputChange(e, setItem)} required />
+							</div>
+							<div className="form-group">
+								<label>Valor Unitario</label>
+								<input type="text" name="valorUnitario" value={item.valorUnitario} onChange={(e)=> handleInputChange(e, setItem)} required />
+							</div>
+							<div className="form-group">
+								<label>Valor Total</label>
+								<input type="text" name="valorTotal" value={item.valorTotal} onChange={(e)=> handleInputChange(e, setItem)} required />
+							</div>
+						</div>
+						<div className="form-row">
+							<div className="modal-actions">
+								<button type="button" className="btn secondary" onClick={handleClose}>Cancelar</button>
+								<button type="submit" className="btn primary">{idProduto ? 'Atualizar' : 'Adicionar'}</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			{produtoModal && (
+				<ModalSearchProduto
+					setProdutoModal={setProdutoModal}
+					setMainItem={setItem}
+				/>
+			)}
+		</>
+	);
+}
 
-// 	function handleInputChange(e) {
-// 		const { name, value } = e.target;
-// 		setSearch(prev => ({ ...prev, [name]: value }));
-// 	};
+function ModalSearchProduto({ setProdutoModal, setMainItem }) {
+	const [search, setSearch] = useState({ id: 0, nome: "" });
+	const [items, setItems] = useState([]);
 
-// 	return (
-// 		<div className="modal-overlay">
-// 			<div className="modal">
-// 				<h2>Selecionar Marca</h2>
-// 				<form>
-// 					<div className="form-row">
-// 						<div className="form-group">
-// 							<label>Codigo</label>
-// 							<input type="number" name="id" value={search.id} onChange={handleInputChange} required min="0" />
-// 						</div>
-// 						<div className="form-group">
-// 							<label>Nome</label>
-// 							<input type="text" name="nome" value={search.nome} onChange={handleInputChange} required />
-// 						</div>
-// 						<div className="form-group">
-// 							<label>Procurar </label>
-// 							<button type="button" className="btn secondary" onClick={handleUpdateName}>🔍</button>
-// 						</div>
-// 					</div>
-// 					<TableSearch items={items} handleSelect={handleSelect} />
-// 					<div className="modal-actions">
-// 						<button type="button" className="btn secondary" onClick={handleClose}>Cancelar</button>
-// 					</div>
-// 				</form>
-// 			</div>
-// 		</div>
-// 	);
-// }
+	async function handleClose() {
+		setItems([]);
+		setProdutoModal(false);
+	}
+
+	async function handleUpdate() {
+		let value = await getProdutoLista(0);
+		if (value != null) setItems(value);
+	}
+
+	async function handleUpdateName() {
+		let value = await getProdutoListaNome(search.nome, 0);
+		if (value != null) setItems(value);
+	}
+
+	async function handleSelect(e, item) {
+		e.preventDefault();
+		setMainItem(prev => ({ ...prev, idProduto: item.id, produto: item }));
+		handleClose();
+	}
+	
+	useEffect(() => {
+		handleUpdate();
+	}, []);
+
+	return (
+		<div className="modal-overlay">
+			<div className="modal">
+				<h2>Selecionar Produto</h2>
+				<div>
+					<div className="form-row">
+						<div className="form-group">
+							<label>Codigo</label>
+							<input type="number" name="id" value={search.id} onChange={(e)=> handleInputChange(e, setSearch)} min="0" />
+						</div>
+						<div className="form-group">
+							<label>Nome</label>
+							<input type="text" name="nome" value={search.nome} onChange={(e)=> handleInputChange(e, setSearch)} />
+						</div>
+						<div className="form-group">
+							<label>Procurar </label>
+							<button type="button" className="btn secondary" onClick={handleUpdateName}>🔍</button>
+						</div>
+					</div>
+					<TableSearch items={items} handleSelect={handleSelect} />
+					<div className="modal-actions">
+						<button type="button" className="btn secondary" onClick={handleClose}>Cancelar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}

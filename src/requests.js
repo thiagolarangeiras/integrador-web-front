@@ -162,6 +162,14 @@ export async function getProdutoLista(page, count=50) {
     return await response.json();
 }
 
+export async function getProdutoListaNome(name, page, count=50) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/produto?page=${page}&count=${count}&nome=${name}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
 export async function postProduto(dados) {
     const token = localStorage.getItem("token");
     let init = getInit("POST", token);

@@ -91,6 +91,14 @@ export const StatusPedido = [
     "Devolvido",
 ];
 
+export const StatusParcela = [
+    "Pendente",
+    "Paga",
+    "Atrassada",
+    "Renegociada",
+    "Cancelada",
+];
+
 export const PedidoSaida = {
 	id: null,
 	idCliente: null,
@@ -118,6 +126,47 @@ export const PedidoSaidaProduto = {
 	valorTotal: null,
 
 	produto: Produto,
+};
+
+export const PedidoSaidaParcela = {
+	id: null,
+    idPedidoSaida: null,
+    valor: null,
+    dataVencimento: null,
+    status: null,
+};
+
+export const PedidoEntrada = {
+	id: null,
+	idFornecedor: null,
+	dataCriacao: null,
+	dataVigencia: null,
+	dataEntregaPrevista: null,
+	dataEntregaReal: null,
+	status: null,
+	statusEntrega: null,
+	statusPagamento: null,
+	valorTotal: null,
+	valorFrete: null,
+	fornecedor: Fornecedor,
+};
+
+export const PedidoEntradaProduto = {
+	id: null,
+	idPedidoEntrada: null,
+	idProduto: null,
+	qtde: null,
+	valorUnitario: null,
+	valorTotal: null,
+	produto: Produto,
+};
+
+export const PedidoEntradaParcela = {
+	id: null,
+    idPedidoEntrada: null,
+    valor: null,
+    dataVencimento: null,
+    status: null,
 };
 
 export const EstadosBr = [

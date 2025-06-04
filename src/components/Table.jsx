@@ -4,7 +4,7 @@ import autoTable from "jspdf-autotable";
 
 function exportToCSV(nome, colunas, items) {
 	const headers = colunas.map(coluna => coluna.label)
-	const data = items.map(item => 
+	const data = items.map(item =>
 		colunas.map(coluna => {
 			let keys = coluna.value.split(".")
 			if (keys.length > 1) {
@@ -17,7 +17,7 @@ function exportToCSV(nome, colunas, items) {
 			return item[coluna.value];
 		})
 	);
-	
+
 	const csvContent = [headers.join(','), ...data.map(row => row.join(','))].join('\n');
 	const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
 	const url = URL.createObjectURL(blob);
@@ -32,7 +32,7 @@ function exportToCSV(nome, colunas, items) {
 
 function exportToExcel(nome, colunas, items) {
 	const headers = colunas.map(coluna => coluna.label)
-	const data = items.map(item => 
+	const data = items.map(item =>
 		colunas.map(coluna => {
 			let keys = coluna.value.split(".")
 			if (keys.length > 1) {
@@ -57,7 +57,7 @@ function exportToExcel(nome, colunas, items) {
 
 function exportToPDF(nome, colunas, items) {
 	const headers = colunas.map(coluna => coluna.label)
-	const data = items.map(item => 
+	const data = items.map(item =>
 		colunas.map(coluna => {
 			let keys = coluna.value.split(".")
 			if (keys.length > 1) {
@@ -85,7 +85,7 @@ function exportToPDF(nome, colunas, items) {
 		// 	endereco: `${c.endereco.rua || ''}, ${c.endereco.numero || ''} - ${c.endereco.bairro || ''}, ${c.endereco.cidade || ''}/${c.endereco.estado || ''}`,
 		// 	status: c.status === 'active' ? 'Ativo' : 'Inativo'
 		// }));
-		
+
 		doc.autoTable({
 			head: [headers],
 			body: data,
@@ -110,15 +110,15 @@ function exportToPDF(nome, colunas, items) {
 };
 
 
-export default function Table({ nome, colunas, items, handleEdit, handleDelete, handleUpdate}) {
+export default function Table({ nome, colunas, items, handleEdit, handleDelete, handleUpdate }) {
 	return (
 		<div className="product-table-container">
 			<div className="table-header">
 				<h2>Lista de {nome}</h2>
 				<div className="table-actions">
-					<button className="btn export-btn" onClick={()=> exportToCSV(nome, colunas, items)}>📄 Exportar CSV</button>
-					<button className="btn export-btn" onClick={()=> exportToExcel(nome, colunas, items)}>📊 Exportar Excel</button>
-					<button className="btn export-btn" onClick={()=> exportToPDF(nome, colunas, items)}>📑 Exportar PDF</button>
+					<button className="btn export-btn" onClick={() => exportToCSV(nome, colunas, items)}>📄 Exportar CSV</button>
+					<button className="btn export-btn" onClick={() => exportToExcel(nome, colunas, items)}>📊 Exportar Excel</button>
+					<button className="btn export-btn" onClick={() => exportToPDF(nome, colunas, items)}>📑 Exportar PDF</button>
 					<button className="btn refresh-btn" onClick={handleUpdate}>🔄 Atualizar</button>
 				</div>
 			</div>
@@ -141,7 +141,7 @@ export default function Table({ nome, colunas, items, handleEdit, handleDelete, 
 								if (keys.length > 1) {
 									let result = item;
 									for (const key of keys) {
-										if(result == null)
+										if (result == null)
 											return (<td></td>)
 										result = result[key];
 									}
@@ -173,6 +173,56 @@ export default function Table({ nome, colunas, items, handleEdit, handleDelete, 
 }
 
 
+export function TableListaDeProduto({ colunas, items, handleNew, handleEdit, handleDelete }) {
+	return (
+		<div className="product-table-container">
+			<div className="table-header">
+				<div className="table-actions">
+					<button className="btn export-btn" onClick={handleNew}>📑 Adicionar</button>
+					{/* <button className="btn refresh-btn" onClick={handleUpdate}>🔄 Atualizar</button> */}
+				</div>
+			</div>
+
+			<table className="product-table">
+				<thead>
+					<tr>
+						{colunas.map(coluna => (
+							<th>{coluna.label}</th>
+						))}
+						<th>AÇÕES</th>
+					</tr>
+				</thead>
+				<tbody>
+					{items.map((item, index) => (
+						<tr key={index}>
+							{colunas.map(coluna => {
+								let keys = coluna.value.split(".")
+								if (keys.length > 1) {
+									let result = item;
+									for (const key of keys) {
+										result = result[key];
+									}
+									return (<td>{result}</td>)
+								}
+								return (<td>{item[coluna.value]}</td>)
+
+							})}
+							<td className="action-buttons">
+								<button className="btn action-btn edit-btn" onClick={() => handleEdit(item.id, index)}>✏️</button>
+								<button className="btn action-btn delete-btn" onClick={() => handleDelete(item.id, index)}>🗑️</button>
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+
+			<div className="table-footer">
+				<span className="showing-text">👁️ Mostrando {items.length} de {items.length}</span>
+			</div>
+		</div>
+	);
+}
+
 
 export function TableSearch({ items, handleSelect }) {
 	return (
@@ -190,7 +240,7 @@ export function TableSearch({ items, handleSelect }) {
 						<td>{item.id}</td>
 						<td>{item.nome}</td>
 						<td className="action-buttons">
-							<button className="btn action-btn edit-btn" onClick={() => handleSelect(item)}>✅</button>
+							<button className="btn action-btn edit-btn" onClick={(e) =>{handleSelect(e, item)}}>✅</button>
 						</td>
 					</tr>
 				))}
