@@ -6,8 +6,8 @@ import { Redirec, Auth, Logout } from "./components/Tools.jsx";
 
 import Sidebar from "./components/Sidebar.jsx";
 
-import Login from "./pages/Signin.jsx";
-import SignUp_Up from "./pages/Signup.jsx";
+import Login from "./pages/Login.jsx";
+import Signup from "./pages/Signup.jsx";
 import Clientes from "./pages/Clientes.jsx";
 import Fornecedores from "./pages/Fornecedores.jsx";
 import Marca from "./pages/Marca.jsx";
@@ -36,7 +36,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/signin",
-        element: <SignUp_Up />
+        element: <Signup />
     },
     {
         //path: "/",
@@ -44,7 +44,7 @@ const router = createBrowserRouter([
         children: [
             {
                 path: "/",
-                element: <Usuarios />,
+                element: <></>,
             },
             {
                 path: "/clientes",

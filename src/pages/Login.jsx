@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { postLogin } from '../requests';
 
-export default function In() {
+export default function Login() {
     const navigate = useNavigate();
     const [usuario, setUsuario] = useState({
         username: "",
@@ -37,9 +37,9 @@ export default function In() {
                 />
                 <div className="buttons">
                     <button type="submit">Entrar</button>
-                    <button type="button" className="forgot-btn">
-                        Esquecí minha senha
-                    </button>
+                    {/* <button type="button" className="forgot-btn">
+                        Recuperar minha conta
+                    </button> */}
                 </div>
             </form>
         </div>
