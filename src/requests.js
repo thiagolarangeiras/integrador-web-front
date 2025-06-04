@@ -13,14 +13,13 @@ function getInit(method, token){
         credentials: "same-origin",
         redirect: "follow",
         referrerPolicy: "no-referrer",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
     };
+    if(token != null){
+        init.headers = {...init.headers, "Authorization": `Bearer ${token}`};
+    }
     return init;
 }
-
 
 // ["Access-Control-Allow-Origin", "http://localhost:5173"],
 // ["Access-Control-Allow-Credentials", "true"]
@@ -42,7 +41,7 @@ export async function getTesteLogin() {
 }
 
 export async function postLogin(dados) {
-    let init = getInit("POST", token);
+    let init = getInit("POST", null);
     init.body = JSON.stringify(dados);
     const response = await fetch(`${url}/auth/login`, init);
     const result = await response.json();
@@ -58,36 +57,14 @@ export async function logout() {
 //Usuarios
 export async function getUsuario(id) {
     const token = localStorage.getItem("token");
-    const init = {
-        method: "GET",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-    };
+    let init = getInit("GET", token);
     const response = await fetch(`${url}/usuario/${id}`, init);
     return await response.json();
 }
 
 export async function getUsuarioLista(page, count) {
     const token = localStorage.getItem("token");
-    const init = {
-        method: "GET",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-    };
+    let init = getInit("GET", token);
     const response = await fetch(`${url}/usuario?page=${page}&count=${count}`, init);
     if(response.status != 200) return null;
     return await response.json();
@@ -95,56 +72,23 @@ export async function getUsuarioLista(page, count) {
 
 export async function postUsuario(dados) {
     const token = localStorage.getItem("token");
-    const init = {
-        method: "POST",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dados),
-    };
+    let init = getInit("POST", token);
+    init.body = JSON.stringify(dados);
     const response = await fetch(`${url}/usuario`, init);
     return await response.json();
 }
 
 export async function patchUsuario(id, dados) {
     const token = localStorage.getItem("token");
-    const init = {
-        method: "PATCH",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dados),
-    };
+    let init = getInit("PATCH", token);
+    init.body = JSON.stringify(dados);
     const response = await fetch(`${url}/usuario/${id}`, init);
     return await response.json();
 }
 
 export async function deleteUsuario(id) {
     const token = localStorage.getItem("token");
-    const init = {
-        method: "DELETE",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-    };
+    let init = getInit("DELETE", token);
     const response = await fetch(`${url}/usuario/${id}`, init);
     if(response.status === 200) return true;
     return false;
@@ -463,6 +407,179 @@ export async function deletePedidoSaidaProduto(id) {
     const token = localStorage.getItem("token");
     let init = getInit("DELETE", token);
     const response = await fetch(`${url}/pedido-saida-produto/${id}`, init);
+    if (response.status != 200) return false;
+    return true;
+}
+
+// Pedido Saida Parcelas
+export async function getPedidoSaidaParcela(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/pedido-saida-parcela/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function getPedidoSaidaParcelaLista(page, count=50) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/pedido-saida-parcela?page=${page}&count=${count}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function postPedidoSaidaParcela(dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("POST", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/pedido-saida-parcela`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function patchPedidoSaidaParcela(id, dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("PATCH", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/pedido-saida-parcela/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function deletePedidoSaidaParcela(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("DELETE", token);
+    const response = await fetch(`${url}/pedido-saida-parcela/${id}`, init);
+    if (response.status != 200) return false;
+    return true;
+}
+
+
+//Pedido Entrada
+export async function getPedidoEntrada(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/pedido-entrada/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function getPedidoEntradaLista(page, count=50) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/pedido-entrada?page=${page}&count=${count}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function postPedidoEntrada(dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("POST", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/pedido-entrada`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function patchPedidoEntrada(id, dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("PATCH", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/pedido-entrada/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function deletePedidoEntrada(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("DELETE", token);
+    const response = await fetch(`${url}/pedido-entrada/${id}`, init);
+    if (response.status != 200) return false;
+    return true;
+}
+
+// Pedido Entrada Produto
+export async function getPedidoEntradaProduto(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/pedido-entrada-produto/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function getPedidoEntradaProdutoLista(page, count=50) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/pedido-entrada-produto?page=${page}&count=${count}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function postPedidoEntradaProduto(dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("POST", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/pedido-entrada-produto`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function patchPedidoEntradaProduto(id, dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("PATCH", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/pedido-entrada-produto/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function deletePedidoEntradaProduto(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("DELETE", token);
+    const response = await fetch(`${url}/pedido-entrada-produto/${id}`, init);
+    if (response.status != 200) return false;
+    return true;
+}
+
+// Pedido Entrada Parcelas
+export async function getPedidoEntradaParcela(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/pedido-entrada-parcela/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function getPedidoEntradaParcelaLista(page, count=50) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/pedido-entrada-parcela?page=${page}&count=${count}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function postPedidoEntradaParcela(dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("POST", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/pedido-entrada-parcela`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function patchPedidoEntradaParcela(id, dados) {
+    const token = localStorage.getItem("token");
+    let init = getInit("PATCH", token);
+    init.body = JSON.stringify(dados);
+    const response = await fetch(`${url}/pedido-entrada-parcela/${id}`, init);
+    if (response.status != 200) return null;
+    return await response.json();
+}
+
+export async function deletePedidoEntradaParcela(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("DELETE", token);
+    const response = await fetch(`${url}/pedido-entrada-parcela/${id}`, init);
     if (response.status != 200) return false;
     return true;
 }
