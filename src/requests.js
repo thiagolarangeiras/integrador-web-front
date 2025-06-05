@@ -385,10 +385,10 @@ export async function getPedidoSaidaProduto(id) {
     return await response.json();
 }
 
-export async function getPedidoSaidaProdutoLista(page, count=50) {
+export async function getPedidoSaidaProdutoLista(idPedido, page, count=50) {
     const token = localStorage.getItem("token");
     let init = getInit("GET", token);
-    const response = await fetch(`${url}/pedido-saida-produto?page=${page}&count=${count}`, init);
+    const response = await fetch(`${url}/pedido-saida-produto?page=${page}&count=${count}&idPedido=${idPedido}`, init);
     if (response.status != 200) return null;
     return await response.json();
 }

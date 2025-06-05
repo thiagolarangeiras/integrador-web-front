@@ -1,125 +1,105 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-	getPedidoSaida,
-	postPedidoSaida,
-	patchPedidoSaida,
-	postPedidoSaidaProduto,
-	patchPedidoSaidaProduto,
-	getPedidoSaidaProduto,
-	deletePedidoSaidaProduto,
-	getProdutoLista,
-	getVendedorLista,
-	getVendedorListaNome,
-	getClienteLista,
-	getClienteListaNome,
-	getProdutoListaNome,
-} from "../requests";
-import { 
-	aplicarMascaraDinheiro, 
-	handleInputChange, 
-	PedidoSaida, 
-	PedidoSaidaProduto, 
-	StatusEntrega, 
-	StatusPagamento, 
-	StatusPedido 
-} from "../utils";
 import { HeaderForm } from "../components/Header";
 import { TableListaDeProduto, TableSearch } from "../components/Table";
+
+import { getPedidoSaida, postPedidoSaida, patchPedidoSaida, postPedidoSaidaProduto, patchPedidoSaidaProduto, 
+	getPedidoSaidaProduto, deletePedidoSaidaProduto, getProdutoLista, getVendedorLista, getVendedorListaNome, 
+	getClienteLista, getClienteListaNome, getProdutoListaNome, 
+	getPedidoSaidaProdutoLista} from "../requests";
+
+import { aplicarMascaraDinheiro, handleInputChange, PedidoSaida, PedidoSaidaProduto, 
+	StatusEntrega, StatusPagamento, StatusPedido } from "../utils";
+
+function cleanMaskPost(value){
+	const cleaned = value
+		.replace(/\s/g, '')  // remove espaços
+		.replace('R$', '')   // remove símbolo R$
+		.replace(/\./g, '')  // remove pontos (milhar)
+		.replace(',', '.');  // troca vírgula decimal por ponto
+	
+	return parseFloat(cleaned);
+}
+
+function cleanMaskGet(value){
+	return value?.split("T")[0];
+}
 
 export default function PedidosSaidaNovo() {
 	const navigate = useNavigate();
 	const { id } = useParams();
 	const [item, setItem] = useState(PedidoSaida);
 	const [produtos, setProdutos] = useState([]);
+	const [produtosDel, setProdutosDel] = useState([]);
 	const [vendedorModal, setVendedorModal] = useState(false);
 	const [clienteModal, setClienteModal] = useState(false);
-
-	// async function handleNew() {
-	// 	setIdProdutoNovo(null);
-	// 	setModal(true);
-	// }
-
-	// async function handleUpdate() {
-	// 	if (idPedido == null || idPedido < 1) {
-	// 		return;
-	// 	} 
-	// 	let value = await getPedidoSaidaProduto(id);
-	// 	if (value != null) { 
-	// 		setItems(value);
-	// 	}
-	// }
-
-	// async function handleEdit(id) {
-	// 	setIdProdutoNovo(id);
-	// 	setModal(true);
-	// }
-
-	// async function handleDelete(id) {
-	// 	if (idPedido == null || idPedido < 1) {
-	// 		setItems((prev) => prev.filter(item => item.id !== id));
-	// 		return;
-	// 	};
-	// 	await deletePedidoSaidaProduto(id);
-	// 	handleUpdate();
-	// }
-
-	useEffect(() => {
-		handleUpdate();
-	}, [id]);
-
-	async function handleUpdate() {
-		if (id == null || id < 1) return;
-		const value = await getPedidoSaida(id);
-		if (value == null) {
-			return;
-		}
-		setItem(value);
-		cleanGet();
-	}
-
-	function cleanMask(value){
-		const cleaned = value
-			.replace(/\s/g, '')  // remove espaços
-    		.replace('R$', '')   // remove símbolo R$
-    		.replace(/\./g, '')  // remove pontos (milhar)
-    		.replace(',', '.');  // troca vírgula decimal por ponto
-		
-  		return parseFloat(cleaned);
-	}
 
 	function cleanGet(){
 		setItem(prev => ({
 			...prev, 
-			dataCriacao: prev.dataCriacao?.split("T")[0],
-			dataEntregaPrevista: prev.dataEntregaPrevista?.split("T")[0],
-			dataEntregaReal: prev.dataEntregaReal?.split("T")[0],
-			dataVigencia: prev.dataVigencia?.split("T")[0]
+			dataCriacao: cleanMaskGet(prev.dataCriacao),
+			dataEntregaPrevista: cleanMaskGet(prev.dataEntregaPrevista),
+			dataEntregaReal: cleanMaskGet(prev.dataEntregaReal),
+			dataVigencia: cleanMaskGet(prev.dataVigencia)
 		}));
 	}
+	
+	async function handleUpdate() {
+		if (id == null || id < 1) {
+			return;
+		} 
 
-	async function handleSubmit() {
+		let pedido = await getPedidoSaida(id);
+		if (pedido == null) { return }
+		setItem(pedido);
+
+		let produtos = await getPedidoSaidaProdutoLista(id, 0, 200);
+		if (produtos == null) { return }
+		setProdutos(produtos);
+		cleanGet();
+	}
+
+	async function handleSubmit(){
 		let itemLimpo = { ...item, vendedor: null, cliente:null }
 		if (typeof itemLimpo.valorFrete == "string"){
-			itemLimpo.valorFrete = cleanMask(itemLimpo.valorFrete);
+			itemLimpo.valorFrete = cleanMaskPost(itemLimpo.valorFrete);
 		}
 		if (typeof itemLimpo.valorTotal == "string"){
-			itemLimpo.valorTotal = cleanMask(itemLimpo.valorTotal);
+			itemLimpo.valorTotal = cleanMaskPost(itemLimpo.valorTotal);
 		}
 		
-		if (id) {
-			await patchPedidoSaida(id, itemLimpo);
+		if(itemLimpo.id){
+			await patchPedidoSaida(itemLimpo.id, itemLimpo);
+			let prods = produtos;
+			for(let i=0; i<prods.length; i++){
+				if(prods[i].id){
+					await patchPedidoSaidaProduto(prods[i].id, prods[i]);
+				} else {
+					prods[i].idPedidoSaida = itemLimpo.id;
+					await postPedidoSaidaProduto(prods[i]);
+				}
+			}
+			let prodsDel = produtosDel;
+			for(let i=0; i<prodsDel.length; i++){
+				if(prodsDel[i].id == null){ continue; }
+				await deletePedidoSaidaProduto(prodsDel[i].id);
+			}
+			handleUpdate();
 			return;
 		}
-		
-		let itemNovo = await postPedidoSaida(itemLimpo);
-		for (let produto in produtos) {
-			produto.idPedidoSaida = itemNovo.id;
-			await postPedidoSaidaProduto(produto);
-		}
-		setItem(itemNovo);
-		navigate(`/pedidos/saida/${itemNovo.id}`);
+
+		let itemResult = await postPedidoSaida(itemLimpo);
+		produtos.forEach(async (p, index) => {
+			p.idPedidoSaida = itemResult.id;
+			await postPedidoSaidaProduto(p);
+		});
+		navigate(`/pedidos/saida/${itemResult.id}`);
 	}
+	
+	useEffect(() => {
+		handleUpdate();
+	}, []);
+
 	return (
 		<div className="layout">
 			<div className="app-container">
@@ -206,11 +186,7 @@ export default function PedidosSaidaNovo() {
 					</div> */}
 				</form>
 				<main className="content-area">
-					<TableProdutos
-						idPedidoSaida={id}
-						items={produtos}
-						setItems={setProdutos}
-					/>
+					<TableProdutos items={produtos} setItems={setProdutos} itemsDel={produtosDel} setItemsDel={setProdutosDel} />
 				</main>
 				{clienteModal && (
 					<ModalSearchCliente handleModalClose={() => { setClienteModal(false); }} setItem={setItem} />
@@ -329,7 +305,7 @@ function ModalSearchCliente({ handleModalClose, setItem }) {
 	);
 }
 
-export function TableProdutos({ idPedido, items, setItems }) {
+function TableProdutos({ items, setItems, itemsDel, setItemsDel }) {
 	const [showModal, setModal] = useState(false);
 	const [idProdutoNovo, setIdProdutoNovo] = useState(null);
 
@@ -344,10 +320,11 @@ export function TableProdutos({ idPedido, items, setItems }) {
 	}
 
 	async function handleDelete(id, index) {
-		setItems((prev) => {
-			prev.splice(index, 1);
-			return prev;
-		});
+		let itemsNew = items;
+		let itemsDelNew = itemsDel;
+		itemsDelNew = itemsDelNew.concat(itemsNew.splice(index, 1)); 
+		setItems(itemsNew);
+		setItemsDel(itemsDelNew);
 	}
 
 	return (

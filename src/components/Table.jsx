@@ -200,6 +200,8 @@ export function TableListaDeProduto({ colunas, items, handleNew, handleEdit, han
 								if (keys.length > 1) {
 									let result = item;
 									for (const key of keys) {
+										if (result == null)
+											return (<td></td>)
 										result = result[key];
 									}
 									return (<td>{result}</td>)
