@@ -515,10 +515,10 @@ export async function getPedidoEntradaProduto(id) {
     return await response.json();
 }
 
-export async function getPedidoEntradaProdutoLista(page, count=50) {
+export async function getPedidoEntradaProdutoLista(id, page, count=50) {
     const token = localStorage.getItem("token");
     let init = getInit("GET", token);
-    const response = await fetch(`${url}/pedido-entrada-produto?page=${page}&count=${count}`, init);
+    const response = await fetch(`${url}/pedido-entrada-produto?page=${page}&count=${count}&idPedido=${id}`, init);
     if (response.status != 200) return null;
     return await response.json();
 }
