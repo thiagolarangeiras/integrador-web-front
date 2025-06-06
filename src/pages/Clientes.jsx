@@ -21,11 +21,6 @@ export default function Clientes() {
     const [modal, setModal] = useState(false);
     const [modalItem, setModalItem] = useState(Cliente);
     const [items, setItems] = useState([]);
-    const [filters, setFilters] = useState({});
-
-    useEffect(() => {
-        handleUpdate();
-    }, [page]);
 
     function handleUpdate() {
         getClienteLista(page).then((value) => {
@@ -49,45 +44,9 @@ export default function Clientes() {
         handleUpdate();
     };
 
-    function applyFilters() {
-        let filteredClientes = [...items];
-
-        // Filtro por tipo
-        if (filters.tipo !== 'Todos Tipos') {
-            filteredClientes = filteredClientes.filter(
-                cliente => cliente.tipo === filters.tipo
-            );
-        }
-
-        // Filtro por status
-        if (filters.status !== 'Todos Status') {
-            const statusValue = filters.status === 'Ativo' ? 'active' : 'inactive';
-            filteredClientes = filteredClientes.filter(
-                cliente => cliente.status === statusValue
-            );
-        }
-
-        // Ordenação
-        filteredClientes.sort((a, b) => {
-            switch (filters.sort) {
-                case 'Nome (A-Z)':
-                    return a.nomePessoa.localeCompare(b.nomePessoa);
-                case 'Nome (Z-A)':
-                    return b.nomePessoa.localeCompare(a.nomePessoa);
-                default:
-                    return 0;
-            }
-        });
-
-        return filteredClientes;
-    };
-
-    const filteredClientes = applyFilters();
-
-    function handleFilterChange(e) {
-        const { name, value } = e.target;
-        setFilters(prev => ({ ...prev, [name]: value }));
-    };
+    useEffect(() => {
+        handleUpdate();
+    }, [page]);
 
     return (
         <div className="layout">
@@ -99,15 +58,7 @@ export default function Clientes() {
                 />
 
                 <main className="content-area">
-                    <Filters uniqueCategories={[0]} />
-                    <Cards
-                        items={[
-                            { value: items.length, label: "Total de Clientes" },
-                            { value: items.filter(c => c.status === 'active').length, label: "Clientes ativos" },
-                            { value: items.filter(c => c.tipo === 'pessoaFisica').length, label: "Clientes Pessoa Fisica" },
-                            { value: items.filter(c => c.tipo === 'pessoaJuridica').length, label: "Clientes Pessoa Juridica" },
-                        ]}
-                    />
+                    <Cards items={[]}/>
                     <Table
                         nome={"Clientes"}
                         items={items}
@@ -115,8 +66,6 @@ export default function Clientes() {
                             { label: "Codigo", value: "id" },
                             { label: "Vendedor", value: "vendedor.nome" },
                             { label: "Nome", value: "nomePessoa" },
-                            //{ label: "Empresa", value: "nomeEmpresa" },
-                            //{ label: "Fantasia/Apelido", value: "nomeFantasia" },
                             { label: "Descricao", value: "descricao" },
                             { label: "Tipo", value: "tipo" },
                             { label: "Documento", value: "cpfCnpj" },

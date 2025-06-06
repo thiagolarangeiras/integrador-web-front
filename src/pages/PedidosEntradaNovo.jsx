@@ -6,12 +6,12 @@ import { TableListaDeProduto, TableSearch } from "../components/Table";
 import { 
 	getPedidoEntrada, postPedidoEntrada, patchPedidoEntrada, 
 	getPedidoEntradaProdutoLista, postPedidoEntradaProduto, patchPedidoEntradaProduto, deletePedidoEntradaProduto, 
-	getProdutoLista, getProdutoListaNome, getVendedorLista, getVendedorListaNome, getClienteLista, getClienteListaNome
+	getProdutoLista, getProdutoListaNome, getFornecedorLista, getFornecedorListaNome
 } from "../requests";
 
 import { 
-	aplicarMascaraDinheiro, handleInputChange, 
-	PedidoSaida, PedidoSaidaProduto, StatusEntrega, StatusPagamento, StatusPedido 
+	aplicarMascaraDinheiro, handleInputChange, PedidoEntradaProduto,
+	PedidoEntrada, StatusEntrega, StatusPagamento, StatusPedido 
 } from "../utils";
 
 function cleanMaskPost(value){
@@ -31,11 +31,10 @@ function cleanMaskGet(value){
 export default function PedidosEntradaNovo() {
 	const navigate = useNavigate();
 	const { id } = useParams();
-	const [item, setItem] = useState(PedidoSaida);
+	const [item, setItem] = useState(PedidoEntrada);
 	const [produtos, setProdutos] = useState([]);
 	const [produtosDel, setProdutosDel] = useState([]);
-	const [vendedorModal, setVendedorModal] = useState(false);
-	const [clienteModal, setClienteModal] = useState(false);
+	const [fornecedorModal, setFornecedorModal] = useState(false);
 
 	function cleanGet(){
 		setItem(prev => ({
@@ -78,7 +77,7 @@ export default function PedidosEntradaNovo() {
 				if(prods[i].id){
 					await patchPedidoEntradaProduto(prods[i].id, prods[i]);
 				} else {
-					prods[i].idPedidoSaida = itemLimpo.id;
+					prods[i].idPedidoEntrada = itemLimpo.id;
 					await postPedidoEntradaProduto(prods[i]);
 				}
 			}
@@ -93,7 +92,7 @@ export default function PedidosEntradaNovo() {
 
 		let itemResult = await postPedidoEntrada(itemLimpo);
 		produtos.forEach(async (p, index) => {
-			p.idPedidoSaida = itemResult.id;
+			p.idPedidoEntrada = itemResult.id;
 			await postPedidoEntradaProduto(p);
 		});
 		navigate(`/pedidos/saida/${itemResult.id}`);
@@ -109,19 +108,11 @@ export default function PedidosEntradaNovo() {
 				<HeaderForm nome={id ? "Atualizar Pedido" : "Novo Pedido" } botaoNome={id ? 'Atualizar' : 'Adicionar'} botaoAcao={handleSubmit}  />
 				<form >
 					<div className="form-group">
-						<label>Cliente</label>
+						<label>Fornecedor</label>
 						<div class="input-group">
-							<button onClick={() => setClienteModal(true)} type="button">🔍</button>
-							<input type="number" name="idCliente" value={item.idCliente} onChange={(e) => handleInputChange(e, setItem)} required />
-							<div class="info-text">{item.cliente?.nome}</div>
-						</div>
-					</div>
-					<div className="form-group">
-						<label>Vendedor</label>
-						<div class="input-group">
-							<button onClick={() => setVendedorModal(true)} type="button">🔍</button>
-							<input type="number" name="idVendedor" value={item.idVendedor} onChange={(e) => handleInputChange(e, setItem)} required />
-							<div class="info-text">{item.vendedor?.nome}</div>
+							<button onClick={() => setFornecedorModal(true)} type="button">🔍</button>
+							<input type="number" name="idFornecedor" value={item.idFornecedor} onChange={(e) => handleInputChange(e, setItem)}/>
+							<div class="info-text">{item.fornecedor?.nome}</div>
 						</div>
 					</div>
 					<div className="form-row">
@@ -184,25 +175,19 @@ export default function PedidosEntradaNovo() {
 							<input type="text" name="valorFrete" value={item.valorFrete} onChange={(e) => aplicarMascaraDinheiro(e, setItem)} required />
 						</div>
 					</div>
-					{/* <div className="modal-actions">
-						<button type="button" onClick={handleSubmit} className="btn primary">{id ? 'Atualizar' : 'Adicionar'}</button>
-					</div> */}
 				</form>
 				<main className="content-area">
 					<TableProdutos items={produtos} setItems={setProdutos} itemsDel={produtosDel} setItemsDel={setProdutosDel} />
 				</main>
-				{clienteModal && (
-					<ModalSearchCliente handleModalClose={() => { setClienteModal(false); }} setItem={setItem} />
-				)}
-				{vendedorModal && (
-					<ModalSearchVendedor handleModalClose={() => setVendedorModal(false)} setItem={setItem} />
+				{fornecedorModal && (
+					<ModalSearchFornecedor handleModalClose={() => { setFornecedorModal(false); }} setItem={setItem} />
 				)}
 			</div>
 		</div>
 	);
 }
 
-function ModalSearchVendedor({ handleModalClose, setItem }) {
+function ModalSearchFornecedor({ handleModalClose, setItem }) {
 	const [searchParams, setSearchParams] = useState({ id: 0, nome: "" });
 	const [searchItems, setSearchItems] = useState([]);
 
@@ -211,78 +196,25 @@ function ModalSearchVendedor({ handleModalClose, setItem }) {
 	}, []);
 
 	async function handleUpdate() {
-		const value = await getVendedorLista(0);
+		const value = await getFornecedorLista(0);
 		if (value != null) setSearchItems(value);
 	}
 
 	async function handleSelect(e, item) {
 		e.preventDefault();
-		setItem(prev => ({ ...prev, idVendedor: item.id, vendedor: item }));
+		setItem(prev => ({ ...prev, idFornecedor: item.id, fornecedor: item }));
 		handleModalClose();
 	}
 
 	async function handleUpdateName() {
-		const value = await getVendedorListaNome(searchParams.nome, 0);
+		const value = await getFornecedorListaNome(searchParams.nome, 0);
 		if (value != null) setSearchItems(value);
 	}
 
 	return (
 		<div className="modal-overlay">
 			<div className="modal">
-				<h2>Selecionar Vendedor</h2>
-				<form>
-					<div className="form-row">
-						<div className="form-group">
-							<label>Codigo</label>
-							<input type="number" name="id" value={searchParams.id} onChange={(e) => handleInputChange(e, setSearchParams)} required min="0" />
-						</div>
-						<div className="form-group">
-							<label>Nome</label>
-							<input type="text" name="nome" value={searchParams.nome} onChange={(e) => handleInputChange(e, setSearchParams)} required />
-						</div>
-						<div className="form-group">
-							<label>Procurar </label>
-							<button type="button" className="btn secondary" onClick={() => handleUpdateName()}>🔍</button>
-						</div>
-					</div>
-					<TableSearch items={searchItems} handleSelect={handleSelect} />
-					<div className="modal-actions">
-						<button type="button" className="btn secondary" onClick={handleModalClose}>Cancelar</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	);
-}
-
-function ModalSearchCliente({ handleModalClose, setItem }) {
-	const [searchParams, setSearchParams] = useState({ id: 0, nome: "" });
-	const [searchItems, setSearchItems] = useState([]);
-
-	useEffect(() => {
-		handleUpdate();
-	}, []);
-
-	async function handleUpdate() {
-		const value = await getClienteLista(0);
-		if (value != null) setSearchItems(value);
-	}
-
-	async function handleSelect(e, item) {
-		e.preventDefault();
-		setItem(prev => ({ ...prev, idCliente: item.id, cliente: item }));
-		handleModalClose();
-	}
-
-	async function handleUpdateName() {
-		const value = await getClienteListaNome(searchParams.nome, 0);
-		if (value != null) setSearchItems(value);
-	}
-
-	return (
-		<div className="modal-overlay">
-			<div className="modal">
-				<h2>Selecionar Cliente</h2>
+				<h2>Selecionar Fornecedor</h2>
 				<form>
 					<div className="form-row">
 						<div className="form-group">
@@ -358,7 +290,7 @@ function TableProdutos({ items, setItems, itemsDel, setItemsDel }) {
 }
 
 function Modal({ idProduto, items, setItems, setModal }) {
-	const [item, setItem] = useState(PedidoSaidaProduto);
+	const [item, setItem] = useState(PedidoEntradaProduto);
 	const [produtoModal, setProdutoModal] = useState(false);
 	
 	useEffect(() => {
@@ -389,7 +321,7 @@ function Modal({ idProduto, items, setItems, setModal }) {
 
 	async function handleClose() {
 		setModal(false);
-		setItem(PedidoSaidaProduto);
+		setItem(PedidoEntradaProduto);
 	}
 
 	return (

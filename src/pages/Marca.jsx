@@ -3,9 +3,7 @@ import { getMarcaLista, postMarca, patchMarca, deleteMarca } from "../requests";
 import { Marca } from "../utils";
 import Header from "../components/Header";
 import Cards from "../components/Cards";
-import Filters from "../components/Filters";
 import Table from "../components/Table";
-
 
 export default function Marcas() {
 	const [page, setPage] = useState(0);
@@ -80,20 +78,7 @@ export default function Marcas() {
 				/>
 
 				<main className="content-area">
-					{/* Filtros */}
-					<Filters uniqueCategories={[0]} />
-
-					{/* Cartões */}
-					<Cards
-						items={[
-							{ value: 0, label: "CARD" },
-							{ value: 0, label: "CARD" },
-							{ value: 0, label: "CARD" },
-							{ value: 0, label: "CARD" },
-						]}
-					/>
-
-					{/* Tabela de Produtos */}
+					<Cards items={[]}/>
 					<Table
 						nome={"Marcas"}
 						items={marca}
@@ -107,8 +92,6 @@ export default function Marcas() {
 					/>
 				</main>
 			</div>
-
-			{/* Modal */}
 			{showAddModal && (
 				<Modal
 					editId={editId}

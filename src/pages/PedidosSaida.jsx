@@ -54,8 +54,8 @@ export default function PedidosSaida() {
 						items={items}
 						colunas={[
 							{ label: "Codigo", value: "id" },
-							{ label: "Cliente", value: "idCliente" },
-							{ label: "Vendedor", value: "idVendedor" },
+							{ label: "Cliente", value: "cliente.nome" },
+							{ label: "Vendedor", value: "vendedor.nome" },
 							{ label: "Status", value: "status" },
 							{ label: "Status Entraga", value: "statusEntrega" },
 							{ label: "Status Pagamento", value: "statusPagamento" },
