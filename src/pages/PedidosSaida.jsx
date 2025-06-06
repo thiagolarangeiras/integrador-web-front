@@ -29,7 +29,6 @@ export default function PedidosSaida() {
 	async function handleDelete(id) {
 		await deletePedidoSaida(id);
 		handleUpdate();
-		
 	};
 
 	return (
@@ -42,13 +41,7 @@ export default function PedidosSaida() {
 				/>
 
 				<main className="content-area">
-					<Filters uniqueCategories={[0]} />
-					<Cards
-						items={[
-							{ value: 0, label: "Total de Produtos" },
-							{ value: 0, label: "Produtos com baixo estoque" },
-						]}
-					/>
+					<Cards items={[]}/>
 					<Table
 						nome={"Pedidos Saida"}
 						items={items}

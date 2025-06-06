@@ -17,20 +17,19 @@ export default function Produtos() {
 		handleUpdate();
 	}, [page]);
 
-	function handleInputChange(e) {
+	async function handleInputChange(e) {
 		const { name, value } = e.target;
 		setNewItem(prev => ({ ...prev, [name]: value }));
 	};
 
-	function handleUpdate() {
-		getProdutoLista(page).then((value) => {
-			if (value != null) {
-				setItems(value);
-			}
-		})
+	async function handleUpdate() {
+		let value = await getProdutoLista(page)
+		if (value != null) {
+			setItems(value);
+		}
 	}
 
-	function handleModalClose(e) {
+	async function handleModalClose(e) {
 		setShowAddModal(false);
 		setEditId(null);
 		setNewItem(Produto);
@@ -44,20 +43,19 @@ export default function Produtos() {
 		handleModalClose();
 	};
 
-	function handleEdit(item) {
+	async function handleEdit(item) {
 		setEditId(item.id);
 		setNewItem(item);
 		setShowAddModal(true);
 	};
 
-	function handleNew() {
+	async function handleNew() {
 		setShowAddModal(true);
 	}
 
-	function handleDelete(id) {
-		deleteProduto(id).then(() => {
-			handleUpdate();
-		});
+	async function handleDelete(id) {
+		let value = await deleteProduto(id)
+		handleUpdate();
 	};
 
 	return (
@@ -70,13 +68,7 @@ export default function Produtos() {
 				/>
 
 				<main className="content-area">
-					<Filters uniqueCategories={[0]} />
-					<Cards
-						items={[
-							{ value: 0, label: "Total de Produtos" },
-							{ value: 0, label: "Produtos com baixo estoque" },
-						]}
-					/>
+					<Cards items={[]}/>
 					<Table
 						nome={"Produtos"}
 						items={items}

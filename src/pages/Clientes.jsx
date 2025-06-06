@@ -1,20 +1,10 @@
 import { useState, useEffect } from 'react';
-
-import {
-    getClienteLista,
-    postCliente,
-    patchCliente,
-    deleteCliente,
-    getVendedorListaNome,
-    getVendedorLista,
-} from "../requests";
-
+import { getClienteLista, postCliente, patchCliente, deleteCliente, getVendedorListaNome, getVendedorLista } from "../requests";
 import { Cliente, EstadosBr } from '../utils';
 
 import Header from "../components/Header";
 import Cards from "../components/Cards";
 import Table, { TableSearch } from "../components/Table";
-import Filters from "../components/Filters";
 
 export default function Clientes() {
     const [page, setPage] = useState(0);
@@ -22,20 +12,19 @@ export default function Clientes() {
     const [modalItem, setModalItem] = useState(Cliente);
     const [items, setItems] = useState([]);
 
-    function handleUpdate() {
-        getClienteLista(page).then((value) => {
-            if (value != null) {
-                setItems(value);
-            }
-        })
+   async function handleUpdate() {
+        let value = await getClienteLista(page);
+        if (value != null) {
+            setItems(value);
+        }
     }
 
-    function handleEdit(item) {
+    async function handleEdit(item) {
         setModalItem(item);
         setModal(true);
     };
 
-    function handleNew() {
+    async function handleNew() {
         setModal(true);
     }
 
@@ -418,137 +407,6 @@ function ModalSearchVendedor({ handleModalClose, setItem, setVendedor }) {
                         <button type="button" className="btn secondary" onClick={handleModalClose}>Cancelar</button>
                     </div>
                 </form>
-            </div>
-        </div>
-    );
-}
-
-function Clientes2() {
-    return (
-        <div className="layout">
-            {/* Conteúdo Principal */}
-            <div className="app-container">
-
-                <main className="content-area">
-                    {/* Filtros */}
-                    <div className="filters-section">
-                        <div className="filter-group">
-                            <label>Tipo</label>
-                            <select
-                                className="filter-select"
-                                name="tipo"
-                                value={filters.tipo}
-                                onChange={handleFilterChange}
-                            >
-                                <option>Todos Tipos</option>
-                                <option>pessoaFisica</option>
-                                <option>pessoaJuridica</option>
-                            </select>
-                        </div>
-                        <div className="filter-group">
-                            <label>Status</label>
-                            <select
-                                className="filter-select"
-                                name="status"
-                                value={filters.status}
-                                onChange={handleFilterChange}
-                            >
-                                <option>Todos Status</option>
-                                <option>Ativo</option>
-                                <option>Inativo</option>
-                            </select>
-                        </div>
-                        <div className="filter-group">
-                            <label>Ordenar por</label>
-                            <select
-                                className="filter-select"
-                                name="sort"
-                                value={filters.sort}
-                                onChange={handleFilterChange}
-                            >
-                                <option>Nome (A-Z)</option>
-                                <option>Nome (Z-A)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Cartões */}
-                    <div className="stats-cards">
-                        <div className="stat-card">
-                            <span className="stat-value">{totalClientes}</span>
-                            <span className="stat-label">Clientes Totais</span>
-                        </div>
-                        <div className="stat-card">
-                            <span className="stat-value">{activeClientes}</span>
-                            <span className="stat-label">Ativos</span>
-                        </div>
-                        <div className="stat-card">
-                            <span className="stat-value">{inactiveClientes}</span>
-                            <span className="stat-label">Inativos</span>
-                        </div>
-                        <div className="stat-card">
-                            <span className="stat-value">{clientesPF}</span>
-                            <span className="stat-label">Pessoa Física</span>
-                        </div>
-                        <div className="stat-card">
-                            <span className="stat-value">{clientesPJ}</span>
-                            <span className="stat-label">Pessoa Jurídica</span>
-                        </div>
-                    </div>
-
-                    {/* Tabela de Clientes */}
-                    <div className="product-table-container">
-                        <div className="table-header">
-                            <h2>Lista de Clientes</h2>
-                            <div className="table-actions">
-                                <button className="btn export-btn" onClick={exportToCSV}>📄 Exportar CSV</button>
-                                <button className="btn export-btn" onClick={exportToExcel}>📊 Exportar Excel</button>
-                                <button className="btn export-btn" onClick={exportToPDF}>📑 Exportar PDF</button>
-                                <button className="btn refresh-btn">🔄 Atualizar</button>
-                            </div>
-                        </div>
-
-                        <table className="product-table">
-                            <thead>
-                                <tr>
-                                    <th>NOME</th>
-                                    <th>TIPO</th>
-                                    <th>DOCUMENTO</th>
-                                    <th>TELEFONE</th>
-                                    <th>EMAIL</th>
-                                    <th>ENDEREÇO</th>
-                                    <th>STATUS</th>
-                                    <th>AÇÕES</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredClientes.map(cliente => (
-                                    <tr key={cliente.id}>
-                                        <td className="product-cell">
-                                            <span className="product-name">{cliente.nome}</span>
-                                        </td>
-                                        <td>{cliente.tipo === 'pessoaFisica' ? 'Pessoa Física' : 'Pessoa Jurídica'}</td>
-                                        <td>{cliente.documento}</td>
-                                        <td>{cliente.telefone}</td>
-                                        <td>{cliente.email}</td>
-                                        <td>
-                                            {cliente.endereco.rua}, {cliente.endereco.numero} - {cliente.endereco.bairro}, {cliente.endereco.cidade}/{cliente.endereco.estado}
-                                        </td>
-                                        <td><span className={`status-badge ${cliente.status}`}>{cliente.status === 'active' ? 'Ativo' : 'Inativo'}</span></td>
-                                        <td className="action-buttons">
-                                            <button className="btn action-btn edit-btn" onClick={() => handleEdit(cliente)}>✏️</button>
-                                            <button className="btn action-btn delete-btn" onClick={() => handleDelete(cliente.id)}>🗑️</button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-
-                        <div className="table-footer">
-                            <span className="showing-text">👁️ Mostrando {filteredClientes.length} de {clientes.length} clientes</span>
-                        </div>
-                    </div>
-                </main>
             </div>
         </div>
     );

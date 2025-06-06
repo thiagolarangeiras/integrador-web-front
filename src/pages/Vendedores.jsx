@@ -4,7 +4,6 @@ import { aplicarMascaraDocumento, aplicarMascaraTelefone, handleInputChange, Ven
 
 import Header from "../components/Header";
 import Cards from "../components/Cards";
-import Filters from "../components/Filters";
 import Table from "../components/Table";
 
 export default function Vendedores() {
@@ -44,15 +43,7 @@ export default function Vendedores() {
 				/>
 
 				<main className="content-area">
-					<Filters uniqueCategories={[0]} />
-					<Cards
-						items={[
-							{ value: items.length, label: "Total de Clientes" },
-							{ value: items.filter(c => c.status === 'active').length, label: "Clientes ativos" },
-							{ value: items.filter(c => c.tipo === 'pessoaFisica').length, label: "Clientes Pessoa Fisica" },
-							{ value: items.filter(c => c.tipo === 'pessoaJuridica').length, label: "Clientes Pessoa Juridica" },
-						]}
-					/>
+					<Cards items={[]}/>
 					<Table
 						nome={"Vendedores"}
 						items={items}

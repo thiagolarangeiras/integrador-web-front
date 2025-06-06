@@ -56,3 +56,65 @@ export function SearchModal() {
 		</table>
 	);
 }
+
+function AutoModalGroup({ fields }) {
+	let i = 0;
+	let mainHtml = (<></>);
+	while (i < fields.length) {
+		const x = fields[i];
+		let html;
+		if (Array.isArray(x)) {
+			console.log("1")
+			console.log(x)
+			html = (<AutoF fields={x}/>);
+			mainHtml = (
+				<>
+					{mainHtml}
+					<div className="form-row">
+						{html}
+					</div>
+				</>
+			);
+			i++;
+			continue;
+		}
+		if (x.type == "text") {
+			mainHtml = (
+				<>
+					{mainHtml}
+					<div className="form-group">
+						<label>{x.label}</label>
+						<input
+							type={x.type}
+							name={x.name}
+							value={x.value}
+							onChange={(e) => x.onChange(e, setItem)}
+							maxLength={x.maxLength}
+							placeholder={x.placeholder}
+							required={x.required}
+						/>
+					</div>
+				</>
+			);
+		}
+		i++;
+	}
+	return mainHtml;
+}
+
+export function CrudAutoModalJson({ item, setItem, fields, handleSubmit, handleModalClose }) {
+	return (
+		<div className="modal-overlay">
+			<div className="modal">
+				<h2>{item.id ? 'Editar Produto' : 'Adicionar Novo Produto'}</h2>
+				<form onSubmit={handleSubmit}>
+					<AutoModalGroup fields={fields} />
+					<div className="modal-actions">
+						<button type="button" className="btn secondary" onClick={handleModalClose}>Cancelar</button>
+						<button type="submit" className="btn primary">{item.id ? 'Atualizar' : 'Adicionar'}</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	);
+}

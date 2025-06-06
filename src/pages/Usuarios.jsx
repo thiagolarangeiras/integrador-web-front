@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { postUsuario, patchUsuario, getUsuarioLista, deleteUsuario } from '../requests';
-import { Usuario, UsuarioCargo} from '../utils';
+import { Usuario, UsuarioCargo } from '../utils';
 import Header from '../components/Header';
-import Filters from '../components/Filters';
 import Cards from '../components/Cards';
 import Table from '../components/Table';
 
@@ -11,110 +10,54 @@ export default function Usuarios() {
     const [showModal, setshowModal] = useState(false);
     const [editId, setEditId] = useState(false);
     const [users, setUsers] = useState([]);
-    const [filters, setFilters] = useState({});
     const [newUser, setNewUser] = useState(Usuario);
 
-    useEffect(() => {
-        getUsuarioLista(page, 50).then((value) => {
-            if (value != null)
-                setUsers(value);
-        })
-    }, [page]);
-
-    function handleInputChange(e) {
+    async function handleInputChange(e) {
         const { name, value } = e.target;
         setNewUser(prev => ({ ...prev, [name]: value }));
     };
 
-    function handleUpdate() {
-        getUsuarioLista(page, 50).then((value) => {
-            if (value != null)
-                setUsers(value);
-        })
+    async function handleUpdate() {
+        let value = await getUsuarioLista(page, 50)
+        if (value != null){
+            setUsers(value);
+        }
     }
 
-    function handleEdit(user) {
+    async function handleEdit(user) {
         setEditId(user.id);
-        setNewUser({
-            username: user.username,
-            email: user.email,
-            cargo: user.cargo
-        });
+        setNewUser(user);
         setshowModal(true);
     };
 
-    function handleDelete(userId) {
-        deleteUsuario(userId).then(() => {
-            handleUpdate();
-        });
+    async function handleDelete(userId) {
+        let value = await deleteUsuario(userId)
+        handleUpdate();
     };
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
-
         if (editId) {
-            patchUsuario(editId, newUser).then(() => {
-                handleUpdate();
-            })
+            let value = await patchUsuario(editId, newUser)
+            handleUpdate();
             setEditId(null);
         } else {
-            postUsuario(newUser).then((value) => {
-                handleUpdate();
-            })
+            let value = await postUsuario(newUser)
+            handleUpdate();
         }
         setshowModal(false);
-        setNewUser({
-            username: '',
-            email: '',
-            password: "",
-            cargo: []
-        });
+        setNewUser(Usuario);
     };
 
-    function handleModalClose(e) {
+    async function handleModalClose(e) {
         setshowModal(false);
         setEditId(0);
         setNewUser(Usuario);
     };
 
-    function handleFilterChange(e) {
-        const { name, value } = e.target;
-        setFilters(prev => ({ ...prev, [name]: value }));
-    };
-
-    function applyFilters() {
-        let filteredUsers = [...users];
-
-        // Filtro por cargo
-        if (filters.cargo !== 'Todos Cargos') {
-            filteredUsers = filteredUsers.filter(
-                user => user.cargo === filters.cargo
-            );
-        }
-
-        // Ordenação
-        filteredUsers.sort((a, b) => {
-            switch (filters.sort) {
-                case 'Nome (A-Z)':
-                    return a.username.localeCompare(b.username);
-                case 'Nome (Z-A)':
-                    return b.username.localeCompare(a.username);
-                case 'Cargo (A-Z)':
-                    return a.cargo.localeCompare(b.cargo);
-                case 'Cargo (Z-A)':
-                    return b.cargo.localeCompare(a.cargo);
-                default:
-                    return 0;
-            }
-        });
-
-        return filteredUsers;
-    };
-
-    const filteredUsers = applyFilters();
-
-    const totalUsers = users.length;
-    const uniqueCargos = ['Todos Cargos', ...new Set(users.map(u => u.cargo))];
+    useEffect(() => {
+        handleUpdate();
+    }, [page]);
 
     return (
         <div className="layout">
@@ -125,10 +68,7 @@ export default function Usuarios() {
                     nomeBotao={"Novo Usuário"}
                 />
                 <main className="content-area">
-                    <Filters uniqueCategories={[]} />
-
                     <Cards items={[]} />
-
                     <Table
                         nome={"Usuarios"}
                         items={users}

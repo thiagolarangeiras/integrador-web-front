@@ -3,7 +3,6 @@ import { getPedidoEntradaLista, deletePedidoEntrada } from "../requests";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Cards from "../components/Cards";
-import Filters from "../components/Filters";
 import Table from "../components/Table";
 
 export default function PedidosEntrada() {
@@ -41,13 +40,7 @@ export default function PedidosEntrada() {
 				/>
 
 				<main className="content-area">
-					<Filters uniqueCategories={[0]} />
-					<Cards
-						items={[
-							{ value: 0, label: "Total de Produtos" },
-							{ value: 0, label: "Produtos com baixo estoque" },
-						]}
-					/>
+					<Cards items={[]}/>
 					<Table
 						nome={"Pedidos Saida"}
 						items={items}

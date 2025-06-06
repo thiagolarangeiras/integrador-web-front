@@ -30,30 +30,24 @@ export default function Marcas() {
 	async function handleModalClose(e) {
 		setShowAddModal(false);
 		setEditId(null);
-		setNewMarca({
-			nome: ""
-		});
+		setNewMarca(Marca);
 	};
 
 	async function handleSubmit(e) {
 		e.preventDefault();
 		if (editId) {
-			patchMarca(editId, newMarca).then(() => {
-				handleUpdate();
-			});
+			let value = await patchMarca(editId, newMarca);
+			handleUpdate();
 		} else {
-			postMarca(newMarca).then((value) => {
-				handleUpdate();
-			});
+			let value = await postMarca(newMarca);
+			handleUpdate();
 		}
 		handleModalClose();
 	};
 
 	async function handleEdit(item) {
 		setEditId(item.id);
-		setNewMarca({
-			nome: item.nome,
-		});
+		setNewMarca(item);
 		setShowAddModal(true);
 	};
 
@@ -61,10 +55,9 @@ export default function Marcas() {
 		setShowAddModal(true);
 	}
 
-	function handleDelete(id) {
-		deleteMarca(id).then(() => {
-			handleUpdate();
-		});
+	async function handleDelete(id) {
+		let value = await deleteMarca(id);
+		handleUpdate();
 	};
 
 	return (
