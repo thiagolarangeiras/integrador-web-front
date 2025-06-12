@@ -6,7 +6,8 @@ import { TableListaDeProduto, TableSearch } from "../components/Table";
 import { getPedidoSaida, postPedidoSaida, patchPedidoSaida, postPedidoSaidaProduto, patchPedidoSaidaProduto, 
 	getPedidoSaidaProduto, deletePedidoSaidaProduto, getProdutoLista, getVendedorLista, getVendedorListaNome, 
 	getClienteLista, getClienteListaNome, getProdutoListaNome, 
-	getPedidoSaidaProdutoLista} from "../requests";
+	getPedidoSaidaProdutoLista,
+	getPedidoSaidaPdf} from "../requests";
 
 import { aplicarMascaraDinheiro, handleInputChange, PedidoSaida, PedidoSaidaProduto, 
 	StatusEntrega, StatusPagamento, StatusPedido } from "../utils";
@@ -95,6 +96,10 @@ export default function PedidosSaidaNovo() {
 		});
 		navigate(`/pedidos/saida/${itemResult.id}`);
 	}
+
+	async function pdfDownload(){
+		await getPedidoSaidaPdf(id);
+	}
 	
 	useEffect(() => {
 		handleUpdate();
@@ -103,7 +108,13 @@ export default function PedidosSaidaNovo() {
 	return (
 		<div className="layout">
 			<div className="app-container">
-				<HeaderForm nome={id ? "Atualizar Pedido" : "Novo Pedido" } botaoNome={id ? 'Atualizar' : 'Adicionar'} botaoAcao={handleSubmit}  />
+				<HeaderForm 
+					nome={ id ? "Atualizar Pedido" : "Novo Pedido" } 
+					botaoNome={ id ? 'Atualizar' : 'Adicionar' } 
+					botaoAcao={handleSubmit}
+					pdfBotao={ id ? true : false }
+					pdfDownload={pdfDownload}
+				/>
 				<form >
 					<div className="form-group">
 						<label>Cliente</label>

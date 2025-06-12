@@ -350,6 +350,18 @@ export async function getPedidoSaidaLista(page, count=50) {
     return await response.json();
 }
 
+export async function getPedidoSaidaPdf(id) {
+    const token = localStorage.getItem("token");
+    let init = getInit("GET", token);
+    const response = await fetch(`${url}/pedido-saida/${id}/pdf`, init);
+    const blob  = await response.blob();
+    const fileURL = window.URL.createObjectURL(blob);
+    let alink = document.createElement("a");
+    alink.href = fileURL;
+    alink.download = `pedido-${id}.pdf`;
+    alink.click();
+}
+
 export async function postPedidoSaida(dados) {
     const token = localStorage.getItem("token");
     let init = getInit("POST", token);
