@@ -1,10 +1,13 @@
+//import MyIcon from "./assets/icons/my-icon.png"; 
+
 export default function Header({ nomeBotao, nomePesquisa, handleNew }) {
 	const placeHolder = `Pesquisar ${nomePesquisa}...`;
 	return (
 		<header className="app-header">
 			<div className="header-content">
 				<div className="logo-container">
-					<div className="logo-icon">🛍️</div>
+					<img src="/logo1.png" alt="logo" width={32} height={32} />
+					{/* <div className="logo-icon">🛍️</div> */}
 					<h1>IntegroSys <span>ERP</span></h1>
 				</div>
 				<div className="header-actions">
@@ -26,7 +29,8 @@ export function HeaderForm({ nome, botaoNome, botaoAcao, pdfBotao, pdfDownload }
 		<header className="app-header">
 			<div className="header-content">
 				<div className="logo-container">
-					<div className="logo-icon">🛍️</div>
+					<img src="/logo1.png" alt="logo" width={32} height={32} />
+					{/* <div className="logo-icon">🛍️</div> */}
 					<h1>IntegroSys <span>ERP</span></h1>
 				</div>
 				<div className="logo-container">

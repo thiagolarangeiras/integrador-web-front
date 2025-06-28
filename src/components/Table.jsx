@@ -242,7 +242,10 @@ export function TableSearch({ items, handleSelect }) {
 						<td>{item.id}</td>
 						<td>{item.nome}</td>
 						<td className="action-buttons">
-							<button className="btn action-btn edit-btn" onClick={(e) =>{handleSelect(e, item)}}>✅</button>
+							<button className="btn action-btn edit-btn" onClick={(e) =>{  
+								e.preventDefault();
+								handleSelect(item);
+							}}>✅</button>
 						</td>
 					</tr>
 				))}

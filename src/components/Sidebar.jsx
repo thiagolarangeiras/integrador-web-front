@@ -12,7 +12,7 @@ export default function Sidebar() {
         <>
             <nav>
             <div className="sidebar">
-                <div className="sidebar-header">ERP web</div>    
+                <div className="sidebar-header">IntegroSys</div>    
                 <ul className="sidebar-menu">
                     <li onClick={() => navigate("/")} className={isCurrentPath("/") ? "active" : ""}>
                         Home

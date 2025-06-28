@@ -95,7 +95,7 @@ export default function PedidosEntradaNovo() {
 			p.idPedidoEntrada = itemResult.id;
 			await postPedidoEntradaProduto(p);
 		});
-		navigate(`/pedidos/saida/${itemResult.id}`);
+		navigate(`/pedidos/entrada/${itemResult.id}`);
 	}
 	
 	useEffect(() => {
@@ -200,8 +200,7 @@ function ModalSearchFornecedor({ handleModalClose, setItem }) {
 		if (value != null) setSearchItems(value);
 	}
 
-	async function handleSelect(e, item) {
-		e.preventDefault();
+	async function handleSelect(item) {
 		setItem(prev => ({ ...prev, idFornecedor: item.id, fornecedor: item }));
 		handleModalClose();
 	}
@@ -390,8 +389,7 @@ function ModalSearchProduto({ setProdutoModal, setMainItem }) {
 		if (value != null) setItems(value);
 	}
 
-	async function handleSelect(e, item) {
-		e.preventDefault();
+	async function handleSelect(item) {
 		setMainItem(prev => ({ ...prev, idProduto: item.id, produto: item }));
 		handleClose();
 	}

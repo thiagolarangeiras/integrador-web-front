@@ -223,8 +223,7 @@ function ModalSearchVendedor({ handleModalClose, setItem }) {
 		if (value != null) setSearchItems(value);
 	}
 
-	async function handleSelect(e, item) {
-		e.preventDefault();
+	async function handleSelect(item) {
 		setItem(prev => ({ ...prev, idVendedor: item.id, vendedor: item }));
 		handleModalClose();
 	}
@@ -276,8 +275,7 @@ function ModalSearchCliente({ handleModalClose, setItem }) {
 		if (value != null) setSearchItems(value);
 	}
 
-	async function handleSelect(e, item) {
-		e.preventDefault();
+	async function handleSelect(item) {
 		setItem(prev => ({ ...prev, idCliente: item.id, cliente: item }));
 		handleModalClose();
 	}
@@ -466,8 +464,7 @@ function ModalSearchProduto({ setProdutoModal, setMainItem }) {
 		if (value != null) setItems(value);
 	}
 
-	async function handleSelect(e, item) {
-		e.preventDefault();
+	async function handleSelect(item) {
 		setMainItem(prev => ({ ...prev, idProduto: item.id, produto: item }));
 		handleClose();
 	}

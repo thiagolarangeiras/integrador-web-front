@@ -94,7 +94,7 @@ function Modal({ handleModalClose, item, setItem }) {
                     </div>
                     <div className="form-group">
                         <label>CPF/CNPJ</label>
-                        <input type="text" name="cpf" value={item.cpf} onChange={(e) => aplicarMascaraDocumento(e, setItem, "Fiscal")} maxLength={14} required />
+                        <input type="text" name="cpfCnpj" value={item.cpfCnpj} onChange={(e) => aplicarMascaraDocumento(e, setItem, "Fiscal")} maxLength={14} required />
                     </div>
                     <div className="form-group">
                         <label>Telefone</label>
